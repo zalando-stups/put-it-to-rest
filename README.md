@@ -1,3 +1,3 @@
 # Put it to REST!
 
-Sprng Boot REST client auto configuration
+Spring Boot REST client auto configuration
