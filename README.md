@@ -76,11 +76,19 @@ rest:
         read: 5
 ```
 
-| Bean Name                              | Bean Type                                   |
-|----------------------------------------|---------------------------------------------|
-| `restAccessToken`                      | `AccessTokens`                              |
+| Configuration                        | Type           | Default                                            |
+|--------------------------------------|----------------|----------------------------------------------------|
+| `rest.oauth.access-token-url`        | `URI`          | required, can be overridden by `ACCESS_TOKEN_URL`  |
+| `rest.oauth.scheduling-period`       | int (seconds)  | `5`                                                |
+| `rest.oauth.timeouts.connect`        | int (seconds)  | `1`                                                |
+| `rest.oauth.timeouts.read`           | int (seconds)  | `2`                                                |
+| `rest.clients.<id>.base-url`         | `URI`          | none                                               |
+| `rest.clients.<id>.oauth`            |                | null, disables OAuth2 security                     |
+| `rest.clients.<id>.oauth.scopes`     | `List<String>` | empty list                                         |
+| `rest.clients.<id>.timeouts.connect` | int (seconds)  | 5                                                  |
+| `rest.clients.<id>.timeouts.read`    | int (seconds)  | 5                                                  |
 
-
+`restAccessToken` `AccessTokens`
 
 | Bean Name                              | Bean Type                                   |
 |----------------------------------------|---------------------------------------------|
