@@ -90,14 +90,12 @@ rest:
 
 `restAccessToken` `AccessTokens`
 
-
-
 | Bean Name                              | Bean Type                                   |
 |----------------------------------------|---------------------------------------------|
 | `exampleHttpClient`                    | `HttpClient`                                |
 | `exampleClientHttpRequestFactory`      | `ClientHttpRequestFactory`                  |
-| `<id>HttpMessageConverters`            | `HttpMessageConverters`                     |
-| `exampleHttpMessageConverters`         | `RestTemplate` or `StupsOAuth2RestTemplate` |
+| `exampleHttpMessageConverters`         | `HttpMessageConverters`                     |
+| `exampleRestTemplate`                  | `RestTemplate` or `StupsOAuth2RestTemplate` |
 | `exampleRest`                          | `Rest`                                      |
 | `exampleHttpAsyncClient`               | `HttpAsyncClient`                           |
 | `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory`             |
