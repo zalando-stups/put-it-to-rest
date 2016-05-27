@@ -35,6 +35,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
@@ -69,7 +70,6 @@ import static org.springframework.beans.factory.support.BeanDefinitionBuilder.ge
 
 @Configuration
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-// TODO conditionals?
 public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistrar, EnvironmentAware {
 
     private ConfigurableEnvironment environment;
@@ -107,13 +107,28 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
                 return factory;
             });
 
+            final String messageConvertersId = register(registry, id, HttpMessageConverters.class, () -> {
+                final String jsonConverterId = register(registry, id, MappingJackson2HttpMessageConverter.class, () -> {
+                    final BeanDefinitionBuilder converter = genericBeanDefinition(MappingJackson2HttpMessageConverter.class);
+                    converter.addConstructorArgReference("objectMapper");
+                    return converter;
+                });
+
+                final StringHttpMessageConverter stringConverter = new StringHttpMessageConverter();
+                stringConverter.setWriteAcceptCharset(false);
+
+                final BeanDefinitionBuilder converters = genericBeanDefinition(HttpMessageConverters.class);
+                converters.addConstructorArgValue(list(stringConverter, ref(jsonConverterId)));
+                return converters;
+            });
+
             final String restTemplateId;
 
             if (oauth == null) {
                 restTemplateId = register(registry, id, RestTemplate.class, () -> {
                     final BeanDefinitionBuilder template = genericBeanDefinition(RestTemplate.class);
                     template.addConstructorArgReference(httpClientFactoryId);
-                    configureRestTemplate(registry, template, id, client);
+                    configureRestTemplate(template, client, messageConvertersId);
                     return template;
                 });
             } else {
@@ -124,7 +139,7 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
                             .addConstructorArgReference(accessTokensId)
                             .getBeanDefinition());
                     template.addConstructorArgReference(httpClientFactoryId);
-                    configureRestTemplate(registry, template, id, client);
+                    configureRestTemplate(template, client, messageConvertersId);
                     return template;
                 });
             }
@@ -172,38 +187,34 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
         builder.addPropertyValue("lastResponseInterceptors", list(ref("logbookHttpResponseInterceptor")));
     }
 
+    private BeanReference ref(String beanName) {
+        return new RuntimeBeanReference(beanName);
+    }
+
     private void configureTimeouts(BeanDefinitionBuilder builder, Timeouts timeouts) {
         builder.addPropertyValue("connectTimeout", (int) TimeUnit.SECONDS.toMillis(timeouts.getConnect()));
         builder.addPropertyValue("readTimeout", (int) TimeUnit.SECONDS.toMillis(timeouts.getRead()));
     }
 
-    private void configureRestTemplate(final BeanDefinitionRegistry registry, final BeanDefinitionBuilder builder,
-            final String id, final Client client) {
+    private void configureRestTemplate(final BeanDefinitionBuilder builder, final Client client,
+            final String messageConvertersId) {
         builder.addPropertyValue("errorHandler", new PassThroughResponseErrorHandler());
         final DefaultUriTemplateHandler handler = new DefaultUriTemplateHandler();
         handler.setBaseUrl(client.getBaseUrl());
         builder.addPropertyValue("uriTemplateHandler", handler);
 
-        final String jsonConverterId = register(registry, id, MappingJackson2HttpMessageConverter.class, () -> {
-            final BeanDefinitionBuilder converter = genericBeanDefinition(MappingJackson2HttpMessageConverter.class);
-            converter.addConstructorArgReference("objectMapper");
-            return converter;
-        });
+        final AbstractBeanDefinition converters = genericBeanDefinition()
+                .setFactoryMethod("getConverters")
+                .getBeanDefinition();
+        converters.setFactoryBeanName(messageConvertersId);
 
-        final StringHttpMessageConverter stringConverter = new StringHttpMessageConverter();
-        stringConverter.setWriteAcceptCharset(false);
-
-        builder.addPropertyValue("messageConverters", list(stringConverter, ref(jsonConverterId)));
+        builder.addPropertyValue("messageConverters", converters);
     }
 
     private List<Object> list(final Object... elements) {
         final ManagedList<Object> list = new ManagedList<>();
         Collections.addAll(list, elements);
         return list;
-    }
-
-    private BeanReference ref(String beanName) {
-        return new RuntimeBeanReference(beanName);
     }
 
     private <T> String register(final BeanDefinitionRegistry registry, final String id, final Class<T> type,
