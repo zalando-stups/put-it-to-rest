@@ -9,16 +9,8 @@
 
 Spring Boot REST client auto configuration
 
-**Description**:  Put a meaningful, short, plain-language description of what
-this project is trying to accomplish and why it matters.
-Describe the problem(s) this project solves.
-Describe how this software can improve the lives of its audience.
-
-Other things to include:
-
-  - **Technology stack**: Spring Boot
-  - **Status**:  Alpha
-
+- **Technology stack**: Spring Boot
+- **Status**:  Alpha
 
 ```yaml
 rest.clients:
@@ -64,8 +56,6 @@ Add the following dependency to your project:
 
 ## Configuration
 
-If the software is configurable, describe it in detail, either here or in other documentation to which you link.
-
 ```yaml
 rest:
   oauth:
@@ -86,15 +76,31 @@ rest:
         read: 5
 ```
 
-TODO table
+| Bean Name                              | Bean Type                                   |
+|----------------------------------------|---------------------------------------------|
+| `restAccessToken`                      | `AccessTokens`                              |
+
+
+
+| Bean Name                              | Bean Type                                   |
+|----------------------------------------|---------------------------------------------|
+| `exampleHttpClient`                    | `HttpClient`                                |
+| `exampleClientHttpRequestFactory`      | `ClientHttpRequestFactory`                  |
+| `<id>HttpMessageConverters`            | `HttpMessageConverters`                     |
+| `exampleHttpMessageConverters`         | `RestTemplate` or `StupsOAuth2RestTemplate` |
+| `exampleRest`                          | `Rest`                                      |
+| `exampleHttpAsyncClient`               | `HttpAsyncClient`                           |
+| `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory`             |
+| `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                         |
+| `exampleAsyncRest`                     | `AsyncRest`                                 |
 
 ## Usage
 
 TODO
 
-## Getting Help with Logbook
+## Getting Help
 
-If you have questions, concerns, bug reports, etc., please file an issue in this repository's [Issue Tracker](https://github.com/zalando/logbook/issues).
+If you have questions, concerns, bug reports, etc., please file an issue in this repository's [Issue Tracker](https://github.com/zalando/put-it-to-rest/issues).
 
 ## Getting Involved/Contributing
 
