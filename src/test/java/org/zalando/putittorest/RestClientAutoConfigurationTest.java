@@ -21,18 +21,20 @@ package org.zalando.putittorest;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.client.RestTemplate;
+import org.zalando.logbook.spring.LogbookAutoConfiguration;
 import org.zalando.riptide.Rest;
+import org.zalando.tracer.spring.TracerAutoConfiguration;
 
 import static org.mockito.Mockito.mock;
 
@@ -41,7 +43,11 @@ import static org.mockito.Mockito.mock;
 public final class RestClientAutoConfigurationTest {
 
     @Configuration
-    @EnableAutoConfiguration
+    @ImportAutoConfiguration({
+            RestClientAutoConfiguration.class,
+            TracerAutoConfiguration.class,
+            LogbookAutoConfiguration.class
+    })
     public static class TestConfiguration {
 
         @Bean
@@ -50,18 +56,8 @@ public final class RestClientAutoConfigurationTest {
         }
 
         @Bean
-        public HttpRequestInterceptor tracerHttpRequestInterceptor() {
-            return mock(HttpRequestInterceptor.class);
-        }
-
-        @Bean
-        public HttpRequestInterceptor logbookHttpRequestInterceptor() {
-            return mock(HttpRequestInterceptor.class);
-        }
-
-        @Bean
-        public HttpResponseInterceptor logbookHttpResponseInterceptor() {
-            return mock(HttpResponseInterceptor.class);
+        public RestTemplate ecbRestTemplate() {
+            return mock(RestTemplate.class);
         }
 
     }

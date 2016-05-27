@@ -40,10 +40,6 @@ class HttpAsyncClientFactoryBean implements FactoryBean<HttpAsyncClient> {
         interceptors.forEach(builder::addInterceptorLast);
     }
 
-    public void setFirstResponseInterceptors(final List<HttpResponseInterceptor> interceptors) {
-        interceptors.forEach(builder::addInterceptorFirst);
-    }
-
     public void setLastResponseInterceptors(final List<HttpResponseInterceptor> interceptors) {
         interceptors.forEach(builder::addInterceptorLast);
     }

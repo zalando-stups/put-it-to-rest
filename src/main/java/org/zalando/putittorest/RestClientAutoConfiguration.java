@@ -21,6 +21,7 @@ package org.zalando.putittorest;
  */
 
 
+import com.google.common.annotations.VisibleForTesting;
 import lombok.SneakyThrows;
 import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
@@ -230,8 +231,9 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
         return name;
     }
 
+    @VisibleForTesting
     @SneakyThrows
-    private RestSettings getSettings() {
+    RestSettings getSettings() {
         final PropertiesConfigurationFactory<RestSettings> factory =
                 new PropertiesConfigurationFactory<>(RestSettings.class);
 

@@ -116,6 +116,16 @@
         <!-- zalando -->
         <dependency>
             <groupId>org.zalando</groupId>
+            <artifactId>tracer-spring-boot-starter</artifactId>
+            <version>0.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-spring-boot-starter</artifactId>
+            <version>1.0.0-RC3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
             <artifactId>riptide</artifactId>
             <version>${riptide.version}</version>
         </dependency>
@@ -180,6 +190,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+            <version>3.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
