@@ -85,10 +85,12 @@ rest:
 | `rest.clients.<id>.base-url`         | `URI`          | none                                               |
 | `rest.clients.<id>.oauth`            |                | null, disables OAuth2 security                     |
 | `rest.clients.<id>.oauth.scopes`     | `List<String>` | empty list                                         |
-| `rest.clients.<id>.timeouts.connect` | int (seconds)  | 5                                                  |
-| `rest.clients.<id>.timeouts.read`    | int (seconds)  | 5                                                  |
+| `rest.clients.<id>.timeouts.connect` | int (seconds)  | `5`                                                |
+| `rest.clients.<id>.timeouts.read`    | int (seconds)  | `5`                                                |
 
 `restAccessToken` `AccessTokens`
+
+
 
 | Bean Name                              | Bean Type                                   |
 |----------------------------------------|---------------------------------------------|
@@ -108,7 +110,8 @@ TODO
 
 ## Getting Help
 
-If you have questions, concerns, bug reports, etc., please file an issue in this repository's [Issue Tracker](https://github.com/zalando/put-it-to-rest/issues).
+If you have questions, concerns, bug reports, etc., please file an issue in this repository's
+[Issue Tracker](https://github.com/zalando/put-it-to-rest/issues).
 
 ## Getting Involved/Contributing
 
