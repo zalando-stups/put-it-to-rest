@@ -1,7 +1,5 @@
 rest:
   oauth:
-    client-id: business-partner-service
-    access-token-url: ${ACCESS_TOKEN_URL:http://example.com}
     scheduling-period: 10
     timeouts:
       connect: 2
@@ -10,7 +8,7 @@ rest:
       base-url: https://business-partner-service.team.company.com
       oauth.scopes:
         - uid
-        - business-partner-service.read
+        - business-partner.read
       timeouts:
         read: 3
     exchange-rate:
@@ -19,4 +17,3 @@ rest:
         - uid
     ecb:
       base-url: http://www.ecb.europa.eu
-      oauth.enabled: false

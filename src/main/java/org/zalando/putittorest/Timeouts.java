@@ -20,6 +20,8 @@ package org.zalando.putittorest;
  * ​⁣
  */
 
+import java.util.concurrent.TimeUnit;
+
 public final class Timeouts {
 
     private int connect;
@@ -44,6 +46,10 @@ public final class Timeouts {
 
     public void setRead(int read) {
         this.read = read;
+    }
+
+    public static int toMillis(int value) {
+        return (int) TimeUnit.SECONDS.toMillis(value);
     }
 
 }

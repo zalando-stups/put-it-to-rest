@@ -20,7 +20,7 @@
         <name>Zalando SE</name>
     </organization>
 
-    <inceptionYear>2015</inceptionYear>
+    <inceptionYear>2016</inceptionYear>
 
     <licenses>
         <license>
@@ -193,6 +193,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-rules</artifactId>
+            <version>1.16.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet</artifactId>
             <version>3.0</version>
@@ -249,6 +255,9 @@
                     <parallel>classesAndMethods</parallel>
                     <threadCount>1</threadCount>
                     <perCoreThreadCount>true</perCoreThreadCount>
+                    <environmentVariables>
+                        <CREDENTIALS_DIR>${project.build.outputDirectory}</CREDENTIALS_DIR>
+                    </environmentVariables>
                 </configuration>
             </plugin>
             <plugin>

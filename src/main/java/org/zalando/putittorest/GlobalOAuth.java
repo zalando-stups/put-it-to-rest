@@ -21,24 +21,12 @@ package org.zalando.putittorest;
  */
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class GlobalOAuth {
 
-    private String clientId;
     private URI accessTokenUrl;
     private int schedulingPeriod = 5;
     private final Timeouts timeouts = new Timeouts(1, 2);
-    private final List<String> scopes = new ArrayList<>();
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
 
     public URI getAccessTokenUrl() {
         return accessTokenUrl;
@@ -58,10 +46,6 @@ public final class GlobalOAuth {
 
     public Timeouts getTimeouts() {
         return timeouts;
-    }
-
-    public List<String> getScopes() {
-        return scopes;
     }
 
 }

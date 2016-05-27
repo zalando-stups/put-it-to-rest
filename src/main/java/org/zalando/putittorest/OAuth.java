@@ -23,31 +23,12 @@ package org.zalando.putittorest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.collect.Iterables.concat;
-import static com.google.common.collect.Sets.newLinkedHashSet;
-
 public final class OAuth {
 
-    private boolean enabled = true;
     private final List<String> scopes = new ArrayList<>();
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
 
     public List<String> getScopes() {
         return scopes;
-    }
-
-    public OAuth merge(final GlobalOAuth that) {
-        final OAuth merged = new OAuth();
-        merged.setEnabled(isEnabled());
-        merged.getScopes().addAll(newLinkedHashSet(concat(getScopes(), that.getScopes())));
-        return merged;
     }
 
 }

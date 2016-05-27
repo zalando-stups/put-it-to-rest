@@ -22,6 +22,7 @@ package org.zalando.putittorest;
 
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.CaseFormat;
 import lombok.SneakyThrows;
 import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
@@ -57,9 +58,8 @@ import org.zalando.riptide.Rest;
 import org.zalando.stups.oauth2.spring.client.StupsOAuth2RestTemplate;
 import org.zalando.stups.oauth2.spring.client.StupsTokensAccessTokenProvider;
 import org.zalando.stups.tokens.AccessTokens;
-import org.zalando.stups.tokens.AccessTokensBuilder;
-import org.zalando.stups.tokens.Tokens;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -69,6 +69,7 @@ import static org.springframework.beans.factory.support.BeanDefinitionBuilder.ge
 
 @Configuration
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
+// TODO conditionals?
 public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistrar, EnvironmentAware {
 
     private ConfigurableEnvironment environment;
@@ -81,10 +82,15 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
     @Override
     public void registerBeanDefinitions(final AnnotationMetadata metadata, final BeanDefinitionRegistry registry) {
         final RestSettings settings = getSettings();
-        final AccessTokens tokens = createAccessTokens(settings);
+
+        final String accessTokensId = register(registry, "rest", AccessTokens.class, () -> {
+            final BeanDefinitionBuilder builder = genericBeanDefinition(AccessTokensFactoryBean.class);
+            builder.addPropertyValue("settings", settings);
+            return builder;
+        });
 
         settings.getClients().forEach((id, client) -> {
-            final OAuth oauth = client.getOauth().merge(settings.getOauth());
+            @Nullable final OAuth oauth = client.getOauth();
             final Timeouts timeouts = client.getTimeouts();
 
             final String httpClientId = register(registry, id, HttpClient.class, () -> {
@@ -103,17 +109,20 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
 
             final String restTemplateId;
 
-            if (oauth.isEnabled()) {
+            if (oauth == null) {
                 restTemplateId = register(registry, id, RestTemplate.class, () -> {
-                    final BeanDefinitionBuilder template = genericBeanDefinition(StupsOAuth2RestTemplate.class);
-                    template.addConstructorArgValue(new StupsTokensAccessTokenProvider(id, tokens));
+                    final BeanDefinitionBuilder template = genericBeanDefinition(RestTemplate.class);
                     template.addConstructorArgReference(httpClientFactoryId);
                     configureRestTemplate(registry, template, id, client);
                     return template;
                 });
             } else {
                 restTemplateId = register(registry, id, RestTemplate.class, () -> {
-                    final BeanDefinitionBuilder template = genericBeanDefinition(RestTemplate.class);
+                    final BeanDefinitionBuilder template = genericBeanDefinition(StupsOAuth2RestTemplate.class);
+                    template.addConstructorArgValue(genericBeanDefinition(StupsTokensAccessTokenProvider.class)
+                            .addConstructorArgValue(id)
+                            .addConstructorArgReference(accessTokensId)
+                            .getBeanDefinition());
                     template.addConstructorArgReference(httpClientFactoryId);
                     configureRestTemplate(registry, template, id, client);
                     return template;
@@ -164,8 +173,8 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
     }
 
     private void configureTimeouts(BeanDefinitionBuilder builder, Timeouts timeouts) {
-        builder.addPropertyValue("connectTimeout", secondsToMillis(timeouts.getConnect()));
-        builder.addPropertyValue("readTimeout", secondsToMillis(timeouts.getRead()));
+        builder.addPropertyValue("connectTimeout", (int) TimeUnit.SECONDS.toMillis(timeouts.getConnect()));
+        builder.addPropertyValue("readTimeout", (int) TimeUnit.SECONDS.toMillis(timeouts.getRead()));
     }
 
     private void configureRestTemplate(final BeanDefinitionRegistry registry, final BeanDefinitionBuilder builder,
@@ -197,22 +206,6 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
         return new RuntimeBeanReference(beanName);
     }
 
-    private AccessTokens createAccessTokens(final RestSettings settings) {
-        final GlobalOAuth oauth = settings.getOauth();
-        final Timeouts timeouts = oauth.getTimeouts();
-        final AccessTokensBuilder builder = Tokens.createAccessTokensWithUri(oauth.getAccessTokenUrl())
-                .schedulingPeriod(oauth.getSchedulingPeriod())
-                .connectTimeout(secondsToMillis(timeouts.getConnect()))
-                .socketTimeout(secondsToMillis(timeouts.getRead()));
-
-        settings.getClients().forEach((id, client) ->
-                builder.manageToken(id)
-                        .addScopes(client.getOauth().getScopes())
-                        .done());
-
-        return builder.start();
-    }
-
     private <T> String register(final BeanDefinitionRegistry registry, final String id, final Class<T> type,
             final Supplier<BeanDefinitionBuilder> factory) {
 
@@ -222,7 +215,7 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
         qualifier.setAttribute(AutowireCandidateQualifier.VALUE_KEY, id);
         definition.addQualifier(qualifier);
 
-        final String name = beanName(id, type);
+        final String name = generateBeanName(id, type);
 
         if (!registry.isBeanNameInUse(name)) {
             registry.registerBeanDefinition(name, definition);
@@ -244,12 +237,12 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
         return factory.getObject();
     }
 
-    private <T> String beanName(final String id, final Class<T> type) {
-        return id + type.getSimpleName();
+    private <T> String generateBeanName(final String id, final Class<T> type) {
+        return camelize(id) + type.getSimpleName();
     }
 
-    private static int secondsToMillis(int value) {
-        return (int) TimeUnit.SECONDS.toMillis(value);
+    private String camelize(String id) {
+        return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, id);
     }
 
 }
