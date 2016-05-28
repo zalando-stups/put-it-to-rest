@@ -6,51 +6,46 @@ package org.zalando.putittorest;
  * ⁣⁣
  * Copyright (C) 2015 - 2016 Zalando SE
  * ⁣⁣
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  * ​⁣
  */
 
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.CaseFormat;
 import com.google.gag.annotation.remark.Hack;
 import lombok.SneakyThrows;
 import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.http.client.AsyncClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
@@ -68,18 +63,19 @@ import org.zalando.stups.oauth2.spring.client.StupsTokensAccessTokenProvider;
 import org.zalando.stups.tokens.AccessTokens;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import static org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition;
+import static org.zalando.putittorest.Registry.generateBeanName;
+import static org.zalando.putittorest.Registry.list;
+import static org.zalando.putittorest.Registry.ref;
 
 @Configuration
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 public class RestClientAutoConfiguration implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
 
     private ConfigurableEnvironment environment;
+    private Registry registry;
 
     @Override
     public void setEnvironment(final Environment environment) {
@@ -88,129 +84,103 @@ public class RestClientAutoConfiguration implements BeanDefinitionRegistryPostPr
     }
 
     @Override
-    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
+    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
         final RestSettings settings = getSettings();
-
-        final String accessTokensId = register(registry, "rest", AccessTokens.class, () -> {
-            final BeanDefinitionBuilder builder = genericBeanDefinition(AccessTokensFactoryBean.class);
-            builder.addPropertyValue("settings", settings);
-            return builder;
-        });
+        this.registry = new Registry(beanDefinitionRegistry);
 
         settings.getClients().forEach((id, client) -> {
             @Nullable final OAuth oauth = client.getOauth();
             final Timeouts timeouts = client.getTimeouts();
 
-            final String httpClientId = register(registry, id, HttpClient.class, () -> {
-                final BeanDefinitionBuilder httpClient = genericBeanDefinition(HttpClientFactoryBean.class);
-                configureInterceptors(registry, httpClient);
-                return httpClient;
-            });
+            final String templateId = generateBeanName(id, RestTemplate.class);
 
-            final String httpClientFactoryId = register(registry, id, ClientHttpRequestFactory.class, () -> {
-                final BeanDefinitionBuilder factory =
-                        genericBeanDefinition(HttpComponentsClientHttpRequestFactory.class);
-                factory.addConstructorArgReference(httpClientId);
-                configureTimeouts(factory, timeouts);
-                return factory;
-            });
+            if (registry.isNotRegistered(templateId)) {
+                final String factoryId = registerClientHttpRequestFactory(id, timeouts);
+                final String convertersId = registerHttpMessageConverters(id);
 
-            final String messageConvertersId = register(registry, id, HttpMessageConverters.class, () -> {
-                final String jsonConverterId = register(registry, id, MappingJackson2HttpMessageConverter.class, () -> {
-                    final BeanDefinitionBuilder converter = genericBeanDefinition(MappingJackson2HttpMessageConverter.class);
-                    converter.addConstructorArgReference("objectMapper");
-                    return converter;
-                });
-
-                final StringHttpMessageConverter stringConverter = new StringHttpMessageConverter();
-                stringConverter.setWriteAcceptCharset(false);
-
-                final BeanDefinitionBuilder converters = genericBeanDefinition(HttpMessageConverters.class);
-                converters.addConstructorArgValue(list(stringConverter, ref(jsonConverterId)));
-                return converters;
-            });
-
-            final String restTemplateId;
-
-            if (oauth == null) {
-                restTemplateId = register(registry, id, RestTemplate.class, () -> {
-                    final BeanDefinitionBuilder template = genericBeanDefinition(RestTemplate.class);
-                    template.addConstructorArgReference(httpClientFactoryId);
-                    configureRestTemplate(template, client, messageConvertersId);
-                    return template;
-                });
-            } else {
-                restTemplateId = register(registry, id, RestTemplate.class, () -> {
-                    final BeanDefinitionBuilder template = genericBeanDefinition(StupsOAuth2RestTemplate.class);
-                    template.addConstructorArgValue(genericBeanDefinition(StupsTokensAccessTokenProvider.class)
-                            .addConstructorArgValue(id)
-                            .addConstructorArgReference(accessTokensId)
-                            .getBeanDefinition());
-                    template.addConstructorArgReference(httpClientFactoryId);
-                    configureRestTemplate(template, client, messageConvertersId);
-                    return template;
-                });
+                if (oauth == null) {
+                    registerRestTemplate(id, client, factoryId, convertersId);
+                } else {
+                    registerStupsOAuth2RestTemplate(settings, id, client, factoryId, convertersId);
+                }
             }
 
-            register(registry, id, Rest.class, () -> {
-                final BeanDefinitionBuilder rest = genericBeanDefinition(Rest.class);
-                rest.setFactoryMethod("create");
-                rest.addConstructorArgReference(restTemplateId);
-                return rest;
-            });
-
-            final String asyncHttpClientId = register(registry, id, HttpAsyncClient.class, () -> {
-                final BeanDefinitionBuilder httpClient = genericBeanDefinition(HttpAsyncClientFactoryBean.class);
-                configureInterceptors(registry, httpClient);
-                return httpClient;
-            });
-
-            final String asyncClientFactoryId = register(registry, id, AsyncClientHttpRequestFactory.class, () -> {
-                final BeanDefinitionBuilder factory =
-                        genericBeanDefinition(HttpComponentsAsyncClientHttpRequestFactory.class);
-                factory.addConstructorArgReference(asyncHttpClientId);
-                configureTimeouts(factory, timeouts);
-                return factory;
-            });
-
-            final String asyncRestTemplateId = register(registry, id, AsyncRestTemplate.class, () -> {
-                final BeanDefinitionBuilder template = genericBeanDefinition(AsyncRestTemplate.class);
-                template.addConstructorArgReference(asyncClientFactoryId);
-                template.addConstructorArgReference(restTemplateId);
-                return template;
-            });
-
-            register(registry, id, AsyncRest.class, () -> {
-                final BeanDefinitionBuilder rest = genericBeanDefinition(AsyncRest.class);
-                rest.setFactoryMethod("create");
-                rest.addConstructorArgReference(asyncRestTemplateId);
-                return rest;
-            });
+            registerRest(id, templateId);
+            registerAsyncRest(id, timeouts, templateId);
         });
     }
 
-    @Hack("In order to avoid a runtime dependency on Tracer and Logbook")
-    private void configureInterceptors(final BeanDefinitionRegistry registry, final BeanDefinitionBuilder builder) {
-        if (registry.isBeanNameInUse("tracerHttpRequestInterceptor")) {
-            builder.addPropertyValue("firstRequestInterceptors", list(ref("tracerHttpRequestInterceptor")));
-        }
+    @VisibleForTesting
+    @SneakyThrows
+    RestSettings getSettings() {
+        final PropertiesConfigurationFactory<RestSettings> factory =
+                new PropertiesConfigurationFactory<>(RestSettings.class);
 
-        if (registry.isBeanNameInUse("logbookHttpRequestInterceptor")) {
-            builder.addPropertyValue("lastRequestInterceptors", list(ref("logbookHttpRequestInterceptor")));
-        }
+        factory.setTargetName("rest");
+        factory.setPropertySources(environment.getPropertySources());
+        factory.setConversionService(environment.getConversionService());
 
-        if (registry.isBeanNameInUse("logbookHttpResponseInterceptor")) {
-            builder.addPropertyValue("lastResponseInterceptors", list(ref("logbookHttpResponseInterceptor")));
-        }
+        return factory.getObject();
     }
 
-    private BeanReference ref(String beanName) {
-        return new RuntimeBeanReference(beanName);
+    private String registerClientHttpRequestFactory(final String id,
+            final Timeouts timeouts) {
+        return registry.register(id, ClientHttpRequestFactory.class, () -> {
+            final BeanDefinitionBuilder factory = genericBeanDefinition(HttpComponentsClientHttpRequestFactory.class);
+            factory.addConstructorArgReference(registerHttpClient(id));
+            configureTimeouts(factory, timeouts);
+            return factory;
+        });
     }
 
-    private void configureTimeouts(BeanDefinitionBuilder builder, Timeouts timeouts) {
+    private String registerHttpClient(final String id) {
+        return registry.register(id, HttpClient.class, () -> {
+            final BeanDefinitionBuilder httpClient = genericBeanDefinition(HttpClientFactoryBean.class);
+            configureInterceptors(httpClient);
+            return httpClient;
+        });
+    }
+
+    private void configureTimeouts(final BeanDefinitionBuilder builder, final Timeouts timeouts) {
         builder.addPropertyValue("connectTimeout", (int) TimeUnit.SECONDS.toMillis(timeouts.getConnect()));
         builder.addPropertyValue("readTimeout", (int) TimeUnit.SECONDS.toMillis(timeouts.getRead()));
+    }
+
+    private String registerHttpMessageConverters(final String id) {
+        return registry.register(id, HttpMessageConverters.class, () ->
+                genericBeanDefinition(HttpMessageConverters.class).
+                        addConstructorArgValue(list(
+                                genericBeanDefinition(StringHttpMessageConverter.class)
+                                        .addPropertyValue("writeAcceptCharset", false)
+                                        .getBeanDefinition(),
+                                genericBeanDefinition(MappingJackson2HttpMessageConverter.class)
+                                        .addConstructorArgReference("objectMapper")
+                                        .getBeanDefinition())));
+    }
+
+    private String registerRestTemplate(final String id, final Client client,
+            final String httpClientFactoryId, final String httpMessageConvertersId) {
+        return registry.register(id, RestTemplate.class, () -> {
+            final BeanDefinitionBuilder template = genericBeanDefinition(RestTemplate.class);
+            template.addConstructorArgReference(httpClientFactoryId);
+            configureRestTemplate(template, client, httpMessageConvertersId);
+            return template;
+        });
+    }
+
+    private String registerStupsOAuth2RestTemplate(final RestSettings settings,
+            final String id, final Client client, final String httpClientFactoryId,
+            final String httpMessageConvertersId) {
+        return registry.register(id, RestTemplate.class, () -> {
+            final BeanDefinitionBuilder template = genericBeanDefinition(StupsOAuth2RestTemplate.class);
+            template.addConstructorArgValue(genericBeanDefinition(StupsTokensAccessTokenProvider.class)
+                    .addConstructorArgValue(id)
+                    .addConstructorArgReference(registerAccessTokens(settings))
+                    .getBeanDefinition());
+            template.addConstructorArgReference(httpClientFactoryId);
+            configureRestTemplate(template, client, httpMessageConvertersId);
+            return template;
+        });
     }
 
     private void configureRestTemplate(final BeanDefinitionBuilder builder, final Client client,
@@ -228,49 +198,75 @@ public class RestClientAutoConfiguration implements BeanDefinitionRegistryPostPr
         builder.addPropertyValue("messageConverters", converters);
     }
 
-    private List<Object> list(final Object... elements) {
-        final ManagedList<Object> list = new ManagedList<>();
-        Collections.addAll(list, elements);
-        return list;
+    private String registerAccessTokens(final RestSettings settings) {
+        return registry.register("rest", AccessTokens.class, () -> {
+            final BeanDefinitionBuilder builder = genericBeanDefinition(AccessTokensFactoryBean.class);
+            builder.addPropertyValue("settings", settings);
+            return builder;
+        });
     }
 
-    private <T> String register(final BeanDefinitionRegistry registry, final String id, final Class<T> type,
-            final Supplier<BeanDefinitionBuilder> factory) {
+    private String registerRest(final String id, final String restTemplateId) {
+        return registry.register(id, Rest.class, () -> {
+            final BeanDefinitionBuilder rest = genericBeanDefinition(Rest.class);
+            rest.setFactoryMethod("create");
+            rest.addConstructorArgReference(restTemplateId);
+            return rest;
+        });
+    }
 
-        final AbstractBeanDefinition definition = factory.get().getBeanDefinition();
+    private String registerAsyncRest(final String id, final Timeouts timeouts,
+            final String restTemplateId) {
+        return registry.register(id, AsyncRest.class, () -> {
+            final BeanDefinitionBuilder rest = genericBeanDefinition(AsyncRest.class);
+            rest.setFactoryMethod("create");
+            rest.addConstructorArgReference(registerAsyncRestTemplate(id, timeouts, restTemplateId));
+            return rest;
+        });
+    }
 
-        final AutowireCandidateQualifier qualifier = new AutowireCandidateQualifier(Qualifier.class);
-        qualifier.setAttribute(AutowireCandidateQualifier.VALUE_KEY, id);
-        definition.addQualifier(qualifier);
+    private String registerAsyncRestTemplate(final String id,
+            final Timeouts timeouts, final String restTemplateId) {
+        return registry.register(id, AsyncRestTemplate.class, () -> {
+            final BeanDefinitionBuilder template = genericBeanDefinition(AsyncRestTemplate.class);
+            template.addConstructorArgReference(registerAsyncClientHttpRequestFactory(id, timeouts));
+            template.addConstructorArgReference(restTemplateId);
+            return template;
+        });
+    }
 
-        final String name = generateBeanName(id, type);
+    private String registerAsyncClientHttpRequestFactory(final String id,
+            final Timeouts timeouts) {
+        return registry.register(id, AsyncClientHttpRequestFactory.class, () -> {
+            final BeanDefinitionBuilder factory =
+                    genericBeanDefinition(HttpComponentsAsyncClientHttpRequestFactory.class);
+            factory.addConstructorArgReference(registerHttpAsyncClient(id));
+            configureTimeouts(factory, timeouts);
+            return factory;
+        });
+    }
 
-        if (!registry.isBeanNameInUse(name)) {
-            registry.registerBeanDefinition(name, definition);
+    private String registerHttpAsyncClient(final String id) {
+        return registry.register(id, HttpAsyncClient.class, () -> {
+            final BeanDefinitionBuilder httpClient = genericBeanDefinition(HttpAsyncClientFactoryBean.class);
+            configureInterceptors(httpClient);
+            return httpClient;
+        });
+    }
+
+    @Hack("In order to avoid a runtime dependency on Tracer and Logbook")
+    private void configureInterceptors(final BeanDefinitionBuilder builder) {
+        if (registry.isRegistered("tracerHttpRequestInterceptor")) {
+            builder.addPropertyValue("firstRequestInterceptors", list(ref("tracerHttpRequestInterceptor")));
         }
 
-        return name;
-    }
+        if (registry.isRegistered("logbookHttpRequestInterceptor")) {
+            builder.addPropertyValue("lastRequestInterceptors", list(ref("logbookHttpRequestInterceptor")));
+        }
 
-    @VisibleForTesting
-    @SneakyThrows
-    RestSettings getSettings() {
-        final PropertiesConfigurationFactory<RestSettings> factory =
-                new PropertiesConfigurationFactory<>(RestSettings.class);
-
-        factory.setTargetName("rest");
-        factory.setPropertySources(environment.getPropertySources());
-        factory.setConversionService(environment.getConversionService());
-
-        return factory.getObject();
-    }
-
-    private <T> String generateBeanName(final String id, final Class<T> type) {
-        return camelize(id) + type.getSimpleName();
-    }
-
-    private String camelize(String id) {
-        return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, id);
+        if (registry.isRegistered("logbookHttpResponseInterceptor")) {
+            builder.addPropertyValue("lastResponseInterceptors", list(ref("logbookHttpResponseInterceptor")));
+        }
     }
 
     @Override

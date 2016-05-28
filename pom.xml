@@ -230,7 +230,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <licenseName>apache_v2</licenseName>
+                    <licenseName>mit</licenseName>
                     <processStartTag>&#8291;&#8203;</processStartTag>
                     <processEndTag>&#8203;&#8291;</processEndTag>
                     <sectionDelimiter>&#8291;&#8291;</sectionDelimiter>

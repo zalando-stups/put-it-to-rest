@@ -91,6 +91,8 @@ rest:
 
 `restAccessToken` `AccessTokens`
 
+### Beans
+
 | Bean Name                              | Bean Type                                   |
 |----------------------------------------|---------------------------------------------|
 | `exampleHttpClient`                    | `HttpClient`                                |
@@ -102,6 +104,12 @@ rest:
 | `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory`             |
 | `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                         |
 | `exampleAsyncRest`                     | `AsyncRest`                                 |
+
+###
+
+![Client Dependency Graph](docs/graph.png)
+
+![OAuth Client Dependency Graph](docs/graph-oauth.png)
 
 ## Usage
 
