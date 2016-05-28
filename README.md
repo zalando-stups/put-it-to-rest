@@ -1,6 +1,6 @@
 # Put it to REST!
 
-[![Resting camel](docs/camel.jpg)](https://pixabay.com/en/camel-relax-lazing-around-sun-1348472/)
+[![Relaxing frog](docs/frog.jpg)](https://pixabay.com/en/frog-meadow-relaxed-relaxation-fig-1109795/)
 
 [![Build Status](https://img.shields.io/travis/zalando/put-it-to-rest.svg)](https://travis-ci.org/zalando/put-it-to-rest)
 [![Coverage Status](https://img.shields.io/coveralls/zalando/put-it-to-rest.svg)](https://coveralls.io/r/zalando/put-it-to-rest)
