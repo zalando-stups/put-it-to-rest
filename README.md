@@ -19,6 +19,8 @@ rest.clients:
     oauth.scopes: [uid]
 ```
 
+## Example
+
 ```java
 @Autowired
 @Qualifier("example")
@@ -96,17 +98,17 @@ rest:
 
 TODO bean names, qualifier, client id
 
-| Bean Name                              | Bean Type                                   |
-|----------------------------------------|---------------------------------------------|
-| `exampleHttpClient`                    | `HttpClient`                                |
-| `exampleClientHttpRequestFactory`      | `ClientHttpRequestFactory`                  |
-| `exampleHttpMessageConverters`         | `HttpMessageConverters`                     |
-| `exampleRestTemplate`                  | `RestTemplate` or `StupsOAuth2RestTemplate` |
-| `exampleRest`                          | `Rest`                                      |
-| `exampleHttpAsyncClient`               | `HttpAsyncClient`                           |
-| `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory`             |
-| `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                         |
-| `exampleAsyncRest`                     | `AsyncRest`                                 |
+| Bean Name                              | Bean Type                                   | Default                                        |
+|----------------------------------------|---------------------------------------------|------------------------------------------------|
+| `exampleHttpClient`                    | `HttpClient`                                | Configures interceptors                        |
+| `exampleClientHttpRequestFactory`      | `ClientHttpRequestFactory`                  | Configures timeouts                            |
+| `exampleHttpMessageConverters`         | `HttpMessageConverters`                     | Configures `text/plain` and `application/json` |
+| `exampleRestTemplate`                  | `RestTemplate` or `StupsOAuth2RestTemplate` | Configures base URL and error handler          |
+| `exampleRest`                          | `Rest`                                      |                                                |
+| `exampleHttpAsyncClient`               | `HttpAsyncClient`                           | Configures interceptors                        |
+| `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory`             | Configures timeouts                            |
+| `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                         |                                                |
+| `exampleAsyncRest`                     | `AsyncRest`                                 |                                                |
 
 ![Client Dependency Graph](docs/graph.png)
 
