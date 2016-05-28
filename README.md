@@ -21,7 +21,7 @@ rest.clients:
 
 ```java
 @Autowired
-@Qualified("example")
+@Qualifier("example")
 private Rest example;
 
 example.execute(GET, "/");
@@ -93,6 +93,8 @@ rest:
 
 ### Beans
 
+TODO bean names, qualifier, client id
+
 | Bean Name                              | Bean Type                                   |
 |----------------------------------------|---------------------------------------------|
 | `exampleHttpClient`                    | `HttpClient`                                |
@@ -104,8 +106,6 @@ rest:
 | `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory`             |
 | `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                         |
 | `exampleAsyncRest`                     | `AsyncRest`                                 |
-
-###
 
 ![Client Dependency Graph](docs/graph.png)
 
