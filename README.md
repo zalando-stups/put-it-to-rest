@@ -109,8 +109,6 @@ TODO bean names, qualifier, client id
 
 ![Client Dependency Graph](docs/graph.png)
 
-![OAuth Client Dependency Graph](docs/graph-oauth.png)
-
 ## Usage
 
 TODO
