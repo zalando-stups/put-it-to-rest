@@ -34,9 +34,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 import org.zalando.logbook.spring.LogbookAutoConfiguration;
+import org.zalando.riptide.AsyncRest;
 import org.zalando.riptide.Rest;
 import org.zalando.tracer.spring.TracerAutoConfiguration;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,11 +50,13 @@ public final class RestClientAutoConfigurationTest {
     @Rule
     public final EnvironmentVariables environment = new EnvironmentVariables();
 
+    private static final RestTemplate TEMPLATE = new RestTemplate();
+
     @Configuration
     @ImportAutoConfiguration({
-            RestClientAutoConfiguration.class,
             TracerAutoConfiguration.class,
-            LogbookAutoConfiguration.class
+            LogbookAutoConfiguration.class,
+            RestClientAutoConfiguration.class,
     })
     public static class TestConfiguration {
 
@@ -61,26 +67,30 @@ public final class RestClientAutoConfigurationTest {
 
         @Bean
         public RestTemplate businessPartnerRestTemplate() {
-            return mock(RestTemplate.class);
+            return TEMPLATE;
         }
 
     }
 
     @Autowired
-    @Qualifier("ecb")
-    private Rest ecb;
+    @Qualifier("businessPartnerRestTemplate")
+    private RestTemplate businessPartner;
 
     @Autowired
-    @Qualifier("business-partner")
-    private Rest businessPartner;
+    @Qualifier("exchange-rate")
+    private AsyncRest exchangeRate;
+
+    @Autowired
+    @Qualifier("ecb")
+    private Rest ecb;
 
     public RestClientAutoConfigurationTest() {
         environment.set("ACCESS_TOKEN_URL", "http://example.com");
     }
 
     @Test
-    public void shouldRun() {
-        // if the application context is booting up, I'm happy
+    public void shouldOverride() {
+        assertThat(businessPartner, is(sameInstance(TEMPLATE)));
     }
 
 }

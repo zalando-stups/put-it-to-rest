@@ -23,16 +23,23 @@ package org.zalando.putittorest;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CaseFormat;
+import com.google.gag.annotation.remark.Hack;
 import lombok.SneakyThrows;
 import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanReference;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
@@ -70,17 +77,18 @@ import static org.springframework.beans.factory.support.BeanDefinitionBuilder.ge
 
 @Configuration
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistrar, EnvironmentAware {
+public class RestClientAutoConfiguration implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
 
     private ConfigurableEnvironment environment;
 
     @Override
     public void setEnvironment(final Environment environment) {
+        // TODO under which circumstances can this be something else?
         this.environment = (ConfigurableEnvironment) environment;
     }
 
     @Override
-    public void registerBeanDefinitions(final AnnotationMetadata metadata, final BeanDefinitionRegistry registry) {
+    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
         final RestSettings settings = getSettings();
 
         final String accessTokensId = register(registry, "rest", AccessTokens.class, () -> {
@@ -95,7 +103,7 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
 
             final String httpClientId = register(registry, id, HttpClient.class, () -> {
                 final BeanDefinitionBuilder httpClient = genericBeanDefinition(HttpClientFactoryBean.class);
-                configureInterceptors(httpClient);
+                configureInterceptors(registry, httpClient);
                 return httpClient;
             });
 
@@ -153,7 +161,7 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
 
             final String asyncHttpClientId = register(registry, id, HttpAsyncClient.class, () -> {
                 final BeanDefinitionBuilder httpClient = genericBeanDefinition(HttpAsyncClientFactoryBean.class);
-                configureInterceptors(httpClient);
+                configureInterceptors(registry, httpClient);
                 return httpClient;
             });
 
@@ -181,10 +189,19 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
         });
     }
 
-    private void configureInterceptors(final BeanDefinitionBuilder builder) {
-        builder.addPropertyValue("firstRequestInterceptors", list(ref("tracerHttpRequestInterceptor")));
-        builder.addPropertyValue("lastRequestInterceptors", list(ref("logbookHttpRequestInterceptor")));
-        builder.addPropertyValue("lastResponseInterceptors", list(ref("logbookHttpResponseInterceptor")));
+    @Hack("In order to avoid a runtime dependency on Tracer and Logbook")
+    private void configureInterceptors(final BeanDefinitionRegistry registry, final BeanDefinitionBuilder builder) {
+        if (registry.isBeanNameInUse("tracerHttpRequestInterceptor")) {
+            builder.addPropertyValue("firstRequestInterceptors", list(ref("tracerHttpRequestInterceptor")));
+        }
+
+        if (registry.isBeanNameInUse("logbookHttpRequestInterceptor")) {
+            builder.addPropertyValue("lastRequestInterceptors", list(ref("logbookHttpRequestInterceptor")));
+        }
+
+        if (registry.isBeanNameInUse("logbookHttpResponseInterceptor")) {
+            builder.addPropertyValue("lastResponseInterceptors", list(ref("logbookHttpResponseInterceptor")));
+        }
     }
 
     private BeanReference ref(String beanName) {
@@ -254,6 +271,11 @@ public class RestClientAutoConfiguration implements ImportBeanDefinitionRegistra
 
     private String camelize(String id) {
         return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, id);
+    }
+
+    @Override
+    public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        // nothing to do
     }
 
 }

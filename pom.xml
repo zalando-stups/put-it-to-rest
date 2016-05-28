@@ -119,16 +119,6 @@
             <artifactId>riptide</artifactId>
             <version>${riptide.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.zalando.stups</groupId>
-            <artifactId>stups-spring-oauth2-client</artifactId>
-            <version>1.0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.zalando.stups</groupId>
-            <artifactId>tokens</artifactId>
-            <version>0.9.8</version>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -151,6 +141,16 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando.stups</groupId>
+            <artifactId>stups-spring-oauth2-client</artifactId>
+            <version>1.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando.stups</groupId>
+            <artifactId>tokens</artifactId>
+            <version>0.9.8</version>
         </dependency>
 
         <!-- testing -->

@@ -38,8 +38,8 @@ example.execute(GET, "/");
 - Spring Boot
 - Apache HTTP Client
 - [Riptide](https://github.com/zalando/riptide)
-- [Logbook](https://github.com/zalando/logbook)
-- [Tracer](https://github.com/zalando/tracer)
+- [Logbook](https://github.com/zalando/logbook) (optional)
+- [Tracer](https://github.com/zalando/tracer) (optional)
 - [Tokens](https://github.com/zalando-stups/tokens)
 - [STUPS Spring OAuth2 Client](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-spring-oauth2-client)
 

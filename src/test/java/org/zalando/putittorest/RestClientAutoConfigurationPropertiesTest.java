@@ -40,8 +40,6 @@ public final class RestClientAutoConfigurationPropertiesTest {
     @Configuration
     @ImportAutoConfiguration({
             RestClientAutoConfiguration.class,
-            TracerAutoConfiguration.class,
-            LogbookAutoConfiguration.class
     })
     public static class TestConfiguration {
 
