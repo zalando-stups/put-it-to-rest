@@ -42,6 +42,7 @@ example.execute(GET, "/");
 - [Tracer](https://github.com/zalando/tracer) (optional)
 - [Tokens](https://github.com/zalando-stups/tokens)
 - [STUPS Spring OAuth2 Client](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-spring-oauth2-client)
+- [Jackson 2](https://github.com/FasterXML/jackson)
 
 ## Installation
 
@@ -60,7 +61,7 @@ Add the following dependency to your project:
 ```yaml
 rest:
   oauth:
-    access-token-url: http://auth.example.com
+    access-token-url: https://auth.example.com
     scheduling-period: 10
     timeouts:
       connect: 1
@@ -77,17 +78,17 @@ rest:
         read: 5
 ```
 
-| Configuration                        | Type           | Default                                            |
-|--------------------------------------|----------------|----------------------------------------------------|
-| `rest.oauth.access-token-url`        | `URI`          | required, can be overridden by `ACCESS_TOKEN_URL`  |
-| `rest.oauth.scheduling-period`       | int (seconds)  | `5`                                                |
-| `rest.oauth.timeouts.connect`        | int (seconds)  | `1`                                                |
-| `rest.oauth.timeouts.read`           | int (seconds)  | `2`                                                |
-| `rest.clients.<id>.base-url`         | `URI`          | none                                               |
-| `rest.clients.<id>.oauth`            |                | none, disables OAuth2 security if omitted          |
-| `rest.clients.<id>.oauth.scopes`     | `List<String>` | none                                               |
-| `rest.clients.<id>.timeouts.connect` | int (seconds)  | `5`                                                |
-| `rest.clients.<id>.timeouts.read`    | int (seconds)  | `5`                                                |
+| Configuration                        | Type            | Default                                            |
+|--------------------------------------|-----------------|----------------------------------------------------|
+| `rest.oauth.access-token-url`        | `URI`           | required, can be overridden by `ACCESS_TOKEN_URL`  |
+| `rest.oauth.scheduling-period`       | `int` (seconds) | `5`                                                |
+| `rest.oauth.timeouts.connect`        | `int` (seconds) | `1`                                                |
+| `rest.oauth.timeouts.read`           | `int` (seconds) | `2`                                                |
+| `rest.clients.<id>.base-url`         | `URI`           | none                                               |
+| `rest.clients.<id>.oauth`            |                 | none, disables OAuth2 security if omitted          |
+| `rest.clients.<id>.oauth.scopes`     | `List<String>`  | none                                               |
+| `rest.clients.<id>.timeouts.connect` | `int` (seconds) | `5`                                                |
+| `rest.clients.<id>.timeouts.read`    | `int` (seconds) | `5`                                                |
 
 `restAccessToken` `AccessTokens`
 
