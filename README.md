@@ -12,26 +12,31 @@ Spring Boot REST client auto configuration
 - **Technology stack**: Spring Boot
 - **Status**:  Alpha
 
+## Example
+
 ```yaml
 rest.clients:
   example:
     base-url: http://example.com
-    oauth.scopes: [uid]
+    oauth.scopes:
+      - example.read
 ```
-
-## Example
 
 ```java
 @Autowired
 @Qualifier("example")
 private Rest example;
-
-example.execute(GET, "/");
 ```
 
 ## Features
 
-- TODO
+Seamless integration of:
+- [Riptide](https://github.com/zalando/riptide)
+- [Logbook](https://github.com/zalando/logbook)
+- [Tracer](https://github.com/zalando/tracer)
+- [Tokens](https://github.com/zalando-stups/tokens)
+- [STUPS Spring OAuth2 Client](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-spring-oauth2-client)
+- [Jackson 2](https://github.com/FasterXML/jackson)
 
 ## Dependencies
 
@@ -39,12 +44,6 @@ example.execute(GET, "/");
 - Any build tool using Maven Central, or direct download
 - Spring Boot
 - Apache HTTP Client
-- [Riptide](https://github.com/zalando/riptide)
-- [Logbook](https://github.com/zalando/logbook) (optional)
-- [Tracer](https://github.com/zalando/tracer) (optional)
-- [Tokens](https://github.com/zalando-stups/tokens)
-- [STUPS Spring OAuth2 Client](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-spring-oauth2-client)
-- [Jackson 2](https://github.com/FasterXML/jackson)
 
 ## Installation
 
@@ -80,6 +79,12 @@ rest:
         read: 5
 ```
 
+### Client IDs, Bean Names and Qualifier
+
+*example*, *exampleRestTemplate*, *example*
+*exchange-rate*, *exchangeRateRestTemplate*, *exchange-rate*
+
+
 | Configuration                        | Type            | Default                                            |
 |--------------------------------------|-----------------|----------------------------------------------------|
 | `rest.oauth.access-token-url`        | `URI`           | required, can be overridden by `ACCESS_TOKEN_URL`  |
@@ -92,11 +97,7 @@ rest:
 | `rest.clients.<id>.timeouts.connect` | `int` (seconds) | `5`                                                |
 | `rest.clients.<id>.timeouts.read`    | `int` (seconds) | `5`                                                |
 
-`restAccessToken` `AccessTokens`
-
 ### Beans
-
-TODO bean names, qualifier, client id
 
 | Bean Name                              | Bean Type                                   | Default                                        |
 |----------------------------------------|---------------------------------------------|------------------------------------------------|
@@ -110,11 +111,13 @@ TODO bean names, qualifier, client id
 | `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                         |                                                |
 | `exampleAsyncRest`                     | `AsyncRest`                                 |                                                |
 
+`restAccessToken` `AccessTokens`
+
 ![Client Dependency Graph](docs/graph.png)
 
-## Usage
+## Customization
 
-TODO
+- TODO overridable beans, by name
 
 ## Getting Help
 
