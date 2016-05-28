@@ -54,6 +54,11 @@ public final class RestClientAutoConfigurationPropertiesTest {
             return new ObjectMapper();
         }
 
+        @Bean
+        public ObjectMapper exchangeRateObjectMapper() {
+            return new ObjectMapper();
+        }
+
     }
 
     @Test

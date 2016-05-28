@@ -60,15 +60,15 @@ Add the following dependency to your project:
 ```yaml
 rest:
   oauth:
-    access-token-url: http://auth.example.com # falls back to the ACCESS_TOKEN_URL env var
+    access-token-url: http://auth.example.com
     scheduling-period: 10
-    timeouts: # always in seconds
+    timeouts:
       connect: 1
       read: 2
   clients:
-    example: # client id
+    example:
       base-url: https://example.com
-      oauth: # omitting this will disable OAuth
+      oauth:
         scopes:
           - uid
           - example.read
@@ -84,8 +84,8 @@ rest:
 | `rest.oauth.timeouts.connect`        | int (seconds)  | `1`                                                |
 | `rest.oauth.timeouts.read`           | int (seconds)  | `2`                                                |
 | `rest.clients.<id>.base-url`         | `URI`          | none                                               |
-| `rest.clients.<id>.oauth`            |                | null, disables OAuth2 security                     |
-| `rest.clients.<id>.oauth.scopes`     | `List<String>` | empty list                                         |
+| `rest.clients.<id>.oauth`            |                | none, disables OAuth2 security if omitted          |
+| `rest.clients.<id>.oauth.scopes`     | `List<String>` | none                                               |
 | `rest.clients.<id>.timeouts.connect` | int (seconds)  | `5`                                                |
 | `rest.clients.<id>.timeouts.read`    | int (seconds)  | `5`                                                |
 

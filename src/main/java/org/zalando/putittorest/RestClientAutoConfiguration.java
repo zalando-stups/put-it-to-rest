@@ -27,6 +27,7 @@ package org.zalando.putittorest;
  */
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gag.annotation.remark.Hack;
 import lombok.SneakyThrows;
@@ -154,8 +155,13 @@ public class RestClientAutoConfiguration implements BeanDefinitionRegistryPostPr
                                         .addPropertyValue("writeAcceptCharset", false)
                                         .getBeanDefinition(),
                                 genericBeanDefinition(MappingJackson2HttpMessageConverter.class)
-                                        .addConstructorArgReference("objectMapper")
+                                        .addConstructorArgReference(findObjectMapper(id))
                                         .getBeanDefinition())));
+    }
+
+    private String findObjectMapper(final String id) {
+        final String beanName = generateBeanName(id, ObjectMapper.class);
+        return registry.isRegistered(beanName) ? beanName : "objectMapper";
     }
 
     private String registerRestTemplate(final String id, final Client client,
