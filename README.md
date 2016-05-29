@@ -30,13 +30,15 @@ private Rest example;
 
 ## Features
 
-Seamless integration of:
-- [Riptide](https://github.com/zalando/riptide)
-- [Logbook](https://github.com/zalando/logbook)
-- [Tracer](https://github.com/zalando/tracer)
-- [Tokens](https://github.com/zalando-stups/tokens)
-- [STUPS Spring OAuth2 Client](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-spring-oauth2-client)
-- [Jackson 2](https://github.com/FasterXML/jackson)
+- Seamless integration of:
+  - [Riptide](https://github.com/zalando/riptide)
+  - [Logbook](https://github.com/zalando/logbook)
+  - [Tracer](https://github.com/zalando/tracer)
+  - [Tokens](https://github.com/zalando-stups/tokens)
+  - [STUPS Spring OAuth2 Client](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-spring-oauth2-client)
+  - [Jackson 2](https://github.com/FasterXML/jackson)
+- [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
+- Sensible defaults
 
 ## Dependencies
 
@@ -59,6 +61,8 @@ Add the following dependency to your project:
 
 ## Configuration
 
+You can now define new REST clients and override default configuration in your `application.yml`:
+
 ```yaml
 rest:
   oauth:
@@ -79,11 +83,9 @@ rest:
         read: 5
 ```
 
-### Client IDs, Bean Names and Qualifier
+Clients are identified by a *Client ID*, for instance `example` in the sample above. You can have as many clients as you want.
 
-*example*, *exampleRestTemplate*, *example*
-*exchange-rate*, *exchangeRateRestTemplate*, *exchange-rate*
-
+For a complete overview of available properties, they type and default value please refer to the following table:
 
 | Configuration                        | Type            | Default                                            |
 |--------------------------------------|-----------------|----------------------------------------------------|
@@ -97,10 +99,51 @@ rest:
 | `rest.clients.<id>.timeouts.connect` | `int` (seconds) | `5`                                                |
 | `rest.clients.<id>.timeouts.read`    | `int` (seconds) | `5`                                                |
 
-### Beans
+## Usage
+
+After configuring your clients, as shown in the last section, you can now easily inject them:
+
+```java
+@Autowired
+@Qualifier("example")
+private Rest example;
+```
+
+All beans that are created for each client use the *Client ID*, in this case `example`, as their qualifier.
+
+Besides `Rest`, you can also alternatively inject any of the following types directly:
+- `RestTemplate`
+- `AsyncRest`
+- `AsyncRestTemplate`
+
+## Customization
+
+For every client that is defined in your configuration the following graph of beans, indicated by the green color, will
+be created:
+
+![Client Dependency Graph](docs/graph.png)
+
+Regarding the other colors:
+- *yellow*: will be created once and then shared across different clients
+- *red*: mandatory dependency
+- *grey*: optional dependency
+
+Every single bean in the graph can optionally be replaced by your own, custom version of it. Beans can only be
+overridden by name, **not** by type. As an example, the following code would add XML support to the `example` client:
+
+```java
+@Bean
+@Qualifier("example")
+public HttpMessageConverters exampleHttpMessageConverters() {
+    return new HttpMessageConverters(new Jaxb2RootElementHttpMessageConverter());
+}
+```
+
+The following table shows all beans with their respective name (for the `example` client) and type:
 
 | Bean Name                              | Bean Type                                   | Default                                        |
 |----------------------------------------|---------------------------------------------|------------------------------------------------|
+| `accessToken` (no client prefix!)      | `AccessTokens`                              | Configures OAuth settings                      |
 | `exampleHttpClient`                    | `HttpClient`                                | Configures interceptors                        |
 | `exampleClientHttpRequestFactory`      | `ClientHttpRequestFactory`                  | Configures timeouts                            |
 | `exampleHttpMessageConverters`         | `HttpMessageConverters`                     | Configures `text/plain` and `application/json` |
@@ -111,13 +154,8 @@ rest:
 | `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                         |                                                |
 | `exampleAsyncRest`                     | `AsyncRest`                                 |                                                |
 
-`accessToken` `AccessTokens`
-
-![Client Dependency Graph](docs/graph.png)
-
-## Customization
-
-- TODO overridable beans, by name
+If you override a bean then all of its dependencies (see the [graph](#customization)), will **not** be registered,
+unless required by some other bean.
 
 ## Getting Help
 
