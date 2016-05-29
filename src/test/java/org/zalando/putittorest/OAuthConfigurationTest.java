@@ -43,6 +43,11 @@ import org.zalando.logbook.spring.LogbookAutoConfiguration;
 public final class OAuthConfigurationTest {
 
     @Test
+    public void shouldUseSchedulingPeriod() {
+        // TODO implement
+    }
+
+    @Test
     public void shouldUseTimeouts() {
         // TODO implement
     }
