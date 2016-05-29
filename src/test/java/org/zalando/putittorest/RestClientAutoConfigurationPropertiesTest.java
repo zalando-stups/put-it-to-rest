@@ -35,11 +35,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.zalando.logbook.spring.LogbookAutoConfiguration;
-import org.zalando.stups.tokens.AccessTokens;
-import org.zalando.tracer.spring.TracerAutoConfiguration;
-
-import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration

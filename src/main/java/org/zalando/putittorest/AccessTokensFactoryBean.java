@@ -33,7 +33,6 @@ import org.zalando.stups.tokens.Tokens;
 
 import javax.annotation.Nullable;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
@@ -52,6 +51,7 @@ class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
                 .schedulingPeriod(oauth.getSchedulingPeriod())
                 .connectTimeout(toMillis(timeouts.getConnect()))
                 .socketTimeout(toMillis(timeouts.getRead()));
+        // TODO custom HttpProvider with interceptors
 
         settings.getClients().forEach((id, client) -> {
             builder.manageToken(id)
