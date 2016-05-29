@@ -205,7 +205,7 @@ public class RestClientAutoConfiguration implements BeanDefinitionRegistryPostPr
     }
 
     private String registerAccessTokens(final RestSettings settings) {
-        return registry.register("rest", AccessTokens.class, () -> {
+        return registry.register(AccessTokens.class, () -> {
             final BeanDefinitionBuilder builder = genericBeanDefinition(AccessTokensFactoryBean.class);
             builder.addPropertyValue("settings", settings);
             return builder;

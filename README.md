@@ -111,7 +111,7 @@ rest:
 | `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                         |                                                |
 | `exampleAsyncRest`                     | `AsyncRest`                                 |                                                |
 
-`restAccessToken` `AccessTokens`
+`accessToken` `AccessTokens`
 
 ![Client Dependency Graph](docs/graph.png)
 

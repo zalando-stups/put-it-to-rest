@@ -26,7 +26,6 @@ package org.zalando.putittorest;
  * ​⁣
  */
 
-import com.google.common.base.CaseFormat;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -39,6 +38,10 @@ import org.springframework.beans.factory.support.ManagedList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
+import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 
 final class Registry {
 
@@ -56,7 +59,11 @@ final class Registry {
         return !isRegistered(name);
     }
 
-    public  <T> String register(final String id, final Class<T> type,
+    public <T> String register(final Class<T> type, final Supplier<BeanDefinitionBuilder> factory) {
+        return register("", type, factory);
+    }
+
+    public <T> String register(final String id, final Class<T> type,
             final Supplier<BeanDefinitionBuilder> factory) {
 
         final String name = generateBeanName(id, type);
@@ -77,11 +84,9 @@ final class Registry {
     }
 
     public static  <T> String generateBeanName(final String id, final Class<T> type) {
-        return camelize(id) + type.getSimpleName();
-    }
-
-    public static String camelize(final String id) {
-        return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, id);
+        return id.isEmpty() ?
+                UPPER_CAMEL.to(LOWER_CAMEL, type.getSimpleName()) :
+                LOWER_HYPHEN.to(LOWER_CAMEL, id) + type.getSimpleName();
     }
 
     public static BeanReference ref(final String beanName) {

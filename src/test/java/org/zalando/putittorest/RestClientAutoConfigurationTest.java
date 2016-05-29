@@ -47,7 +47,6 @@ import org.zalando.tracer.spring.TracerAutoConfiguration;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration
