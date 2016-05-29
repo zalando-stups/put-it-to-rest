@@ -224,28 +224,6 @@
                 <version>2.6</version>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>update-file-header</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <licenseName>mit</licenseName>
-                    <processStartTag>&#8291;&#8203;</processStartTag>
-                    <processEndTag>&#8203;&#8291;</processEndTag>
-                    <sectionDelimiter>&#8291;&#8291;</sectionDelimiter>
-                    <excludes>
-                        <exclude>**/*.json</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
@@ -266,7 +244,7 @@
                     <threadCount>1</threadCount>
                     <perCoreThreadCount>true</perCoreThreadCount>
                     <environmentVariables>
-                        <CREDENTIALS_DIR>${project.build.outputDirectory}</CREDENTIALS_DIR>
+                        <OAUTH2_ACCESS_TOKENS>example=example,ecb=ecb</OAUTH2_ACCESS_TOKENS>
                     </environmentVariables>
                 </configuration>
             </plugin>
