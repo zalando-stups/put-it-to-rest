@@ -60,7 +60,15 @@ final class Registry {
     }
 
     public <T> String register(final Class<T> type, final Supplier<BeanDefinitionBuilder> factory) {
-        return register("", type, factory);
+        final String name = UPPER_CAMEL.to(LOWER_CAMEL, type.getSimpleName());
+
+        if (registry.isBeanNameInUse(name)) {
+            return name;
+        }
+
+        registry.registerBeanDefinition(name, factory.get().getBeanDefinition());
+
+        return name;
     }
 
     public <T> String register(final String id, final Class<T> type,
@@ -84,9 +92,7 @@ final class Registry {
     }
 
     public static  <T> String generateBeanName(final String id, final Class<T> type) {
-        return id.isEmpty() ?
-                UPPER_CAMEL.to(LOWER_CAMEL, type.getSimpleName()) :
-                LOWER_HYPHEN.to(LOWER_CAMEL, id) + type.getSimpleName();
+        return LOWER_HYPHEN.to(LOWER_CAMEL, id) + type.getSimpleName();
     }
 
     public static BeanReference ref(final String beanName) {

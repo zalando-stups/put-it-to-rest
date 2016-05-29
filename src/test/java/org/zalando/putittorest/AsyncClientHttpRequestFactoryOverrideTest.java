@@ -26,76 +26,44 @@ package org.zalando.putittorest;
  * ​⁣
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.client.AsyncClientHttpRequestFactory;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.RestTemplate;
-import org.zalando.logbook.spring.LogbookAutoConfiguration;
-import org.zalando.riptide.AsyncRest;
-import org.zalando.riptide.Rest;
-import org.zalando.tracer.spring.TracerAutoConfiguration;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.zalando.putittorest.Mocks.isMock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration
-public final class RestClientAutoConfigurationTest {
-
-    @Rule
-    public final EnvironmentVariables environment = new EnvironmentVariables();
-
-    private static final RestTemplate TEMPLATE = new RestTemplate();
+public final class AsyncClientHttpRequestFactoryOverrideTest {
 
     @Configuration
-    @ImportAutoConfiguration({
-            TracerAutoConfiguration.class,
-            LogbookAutoConfiguration.class,
-            RestClientAutoConfiguration.class,
-    })
+    @Import(DefaultTestConfiguration.class)
     public static class TestConfiguration {
 
         @Bean
-        public ObjectMapper objectMapper() {
-            return new ObjectMapper();
-        }
-
-        @Bean
-        public RestTemplate businessPartnerRestTemplate() {
-            return TEMPLATE;
+        @Qualifier("example")
+        public AsyncClientHttpRequestFactory exampleAsyncClientHttpRequestFactory() {
+            return mock(AsyncClientHttpRequestFactory.class);
         }
 
     }
 
     @Autowired
-    @Qualifier("businessPartnerRestTemplate")
-    private RestTemplate businessPartner;
-
-    @Autowired
-    @Qualifier("exchange-rate")
-    private AsyncRest exchangeRate;
-
-    @Autowired
-    @Qualifier("ecb")
-    private Rest ecb;
-
-    public RestClientAutoConfigurationTest() {
-        environment.set("ACCESS_TOKEN_URL", "http://example.com");
-    }
+    @Qualifier("example")
+    private AsyncClientHttpRequestFactory unit;
 
     @Test
     public void shouldOverride() {
-        assertThat(businessPartner, is(sameInstance(TEMPLATE)));
+        assertThat(unit, isMock());
     }
 
 }
