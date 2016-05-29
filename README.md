@@ -141,18 +141,18 @@ public HttpMessageConverters exampleHttpMessageConverters() {
 
 The following table shows all beans with their respective name (for the `example` client) and type:
 
-| Bean Name                              | Bean Type                                   | Default                                        |
-|----------------------------------------|---------------------------------------------|------------------------------------------------|
-| `accessToken` (no client prefix!)      | `AccessTokens`                              | Configures OAuth settings                      |
-| `exampleHttpClient`                    | `HttpClient`                                | Configures interceptors                        |
-| `exampleClientHttpRequestFactory`      | `ClientHttpRequestFactory`                  | Configures timeouts                            |
-| `exampleHttpMessageConverters`         | `HttpMessageConverters`                     | Configures `text/plain` and `application/json` |
-| `exampleRestTemplate`                  | `RestTemplate` or `StupsOAuth2RestTemplate` | Configures base URL and error handler          |
-| `exampleRest`                          | `Rest`                                      |                                                |
-| `exampleHttpAsyncClient`               | `HttpAsyncClient`                           | Configures interceptors                        |
-| `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory`             | Configures timeouts                            |
-| `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                         |                                                |
-| `exampleAsyncRest`                     | `AsyncRest`                                 |                                                |
+| Bean Name                              | Bean Type                                   | Configures                          |
+|----------------------------------------|---------------------------------------------|-------------------------------------|
+| `accessToken` (no client prefix!)      | `AccessTokens`                              | OAuth settings                      |
+| `exampleHttpClient`                    | `HttpClient`                                | Interceptors                        |
+| `exampleClientHttpRequestFactory`      | `ClientHttpRequestFactory`                  | Timeouts                            |
+| `exampleHttpMessageConverters`         | `HttpMessageConverters`                     | `text/plain` and `application/json` |
+| `exampleRestTemplate`                  | `RestTemplate` or `StupsOAuth2RestTemplate` | Base URL and error handler          |
+| `exampleRest`                          | `Rest`                                      |                                     |
+| `exampleHttpAsyncClient`               | `HttpAsyncClient`                           | Interceptors                        |
+| `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory`             | Timeouts                            |
+| `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                         |                                     |
+| `exampleAsyncRest`                     | `AsyncRest`                                 |                                     |
 
 If you override a bean then all of its dependencies (see the [graph](#customization)), will **not** be registered,
 unless required by some other bean.
