@@ -84,15 +84,15 @@ Clients are identified by a *Client ID*, for instance `example` in the sample ab
 
 For a complete overview of available properties, they type and default value please refer to the following table:
 
-| Configuration                        | Type            | Default                                            |
-|--------------------------------------|-----------------|----------------------------------------------------|
-| `rest.oauth.access-token-url`        | `URI`           | required, can be overridden by `ACCESS_TOKEN_URL`  |
-| `rest.oauth.scheduling-period`       | `int` (seconds) | `5`                                                |
-| `rest.oauth.timeouts.connect`        | `int` (seconds) | `1`                                                |
-| `rest.oauth.timeouts.read`           | `int` (seconds) | `2`                                                |
-| `rest.clients.<id>.base-url`         | `URI`           | none                                               |
-| `rest.clients.<id>.oauth`            |                 | none, disables OAuth2 security if omitted          |
-| `rest.clients.<id>.oauth.scopes`     | `List<String>`  | none                                               |
+| Configuration                        | Type            | Required | Default                          |
+|--------------------------------------|-----------------|----------|----------------------------------|
+| `rest.oauth.access-token-url`        | `URI`           | no       | env var `ACCESS_TOKEN_URL`       |   
+| `rest.oauth.scheduling-period`       | `int` (seconds) | no       | `5`                              |
+| `rest.oauth.timeouts.connect`        | `int` (seconds) | no       | `1`                              |
+| `rest.oauth.timeouts.read`           | `int` (seconds) | no       | `2`                              |
+| `rest.clients.<id>.base-url`         | `URI`           | no       | none                             |
+| `rest.clients.<id>.oauth`            |                 | no       | none, disables OAuth2 if omitted |
+| `rest.clients.<id>.oauth.scopes`     | `List<String>`  | no       | none                             |
 
 ## Usage
 
