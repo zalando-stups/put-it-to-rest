@@ -78,9 +78,6 @@ rest:
         scopes:
           - uid
           - example.read
-      timeouts:
-        connect: 5
-        read: 5
 ```
 
 Clients are identified by a *Client ID*, for instance `example` in the sample above. You can have as many clients as you want.
@@ -96,8 +93,6 @@ For a complete overview of available properties, they type and default value ple
 | `rest.clients.<id>.base-url`         | `URI`           | none                                               |
 | `rest.clients.<id>.oauth`            |                 | none, disables OAuth2 security if omitted          |
 | `rest.clients.<id>.oauth.scopes`     | `List<String>`  | none                                               |
-| `rest.clients.<id>.timeouts.connect` | `int` (seconds) | `5`                                                |
-| `rest.clients.<id>.timeouts.read`    | `int` (seconds) | `5`                                                |
 
 ## Usage
 
