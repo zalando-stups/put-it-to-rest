@@ -2,10 +2,10 @@
 
 [![Relaxing frog](docs/frog.jpg)](https://pixabay.com/en/frog-meadow-relaxed-relaxation-fig-1109795/)
 
-[![Build Status](https://img.shields.io/travis/zalando/put-it-to-rest.svg)](https://travis-ci.org/zalando/put-it-to-rest)
-[![Coverage Status](https://img.shields.io/coveralls/zalando/put-it-to-rest.svg)](https://coveralls.io/r/zalando/put-it-to-rest)
-[![Release](https://img.shields.io/github/release/zalando/put-it-to-rest.svg)](https://github.com/zalando/put-it-to-rest/releases)
-[![Maven Central](https://img.shields.io/maven-central/v/org.zalando/put-it-to-rest-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/put-it-to-rest)
+[![Build Status](https://img.shields.io/travis/zalando-incubator/put-it-to-rest.svg)](https://travis-ci.org/zalando-incubator/put-it-to-rest)
+[![Coverage Status](https://img.shields.io/coveralls/zalando-incubator/put-it-to-rest.svg)](https://coveralls.io/r/zalando-incubator/put-it-to-rest)
+[![Release](https://img.shields.io/github/release/zalando-incubator/put-it-to-rest.svg)](https://github.com/zalando-incubator/put-it-to-rest/releases)
+[![Maven Central](https://img.shields.io/maven-central/v/org.zalando-incubator/put-it-to-rest-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando-incubator/put-it-to-rest)
 
 Spring Boot REST client auto configuration
 

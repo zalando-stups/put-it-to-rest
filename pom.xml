@@ -14,7 +14,7 @@
 
     <name>Put it to REST!</name>
     <description>Spring Boot REST Client Auto Configuration</description>
-    <url>https://github.com/zalando/put-it-to-rest</url>
+    <url>https://github.com/zalando-incubator/put-it-to-rest</url>
 
     <organization>
         <name>Zalando SE</name>
@@ -40,9 +40,9 @@
     </developers>
 
     <scm>
-        <url>https://github.com/zalando/put-it-to-rest</url>
-        <connection>scm:git:git@github.com:zalando/put-it-to-rest.git</connection>
-        <developerConnection>scm:git:git@github.com:zalando/put-it-to-rest.git</developerConnection>
+        <url>https://github.com/zalando-incubator/put-it-to-rest</url>
+        <connection>scm:git:git@github.com:zalando-incubator/put-it-to-rest.git</connection>
+        <developerConnection>scm:git:git@github.com:zalando-incubator/put-it-to-rest.git</developerConnection>
     </scm>
 
     <properties>
