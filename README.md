@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/travis/zalando-incubator/put-it-to-rest.svg)](https://travis-ci.org/zalando-incubator/put-it-to-rest)
 [![Coverage Status](https://img.shields.io/coveralls/zalando-incubator/put-it-to-rest.svg)](https://coveralls.io/r/zalando-incubator/put-it-to-rest)
 [![Release](https://img.shields.io/github/release/zalando-incubator/put-it-to-rest.svg)](https://github.com/zalando-incubator/put-it-to-rest/releases)
-[![Maven Central](https://img.shields.io/maven-central/v/org.zalando-incubator/put-it-to-rest-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando-incubator/put-it-to-rest)
+[![Maven Central](https://img.shields.io/maven-central/v/org.zalando/put-it-to-rest-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/put-it-to-rest)
 
 Spring Boot REST client auto configuration
 
@@ -78,26 +78,21 @@ rest:
         scopes:
           - uid
           - example.read
-      timeouts:
-        connect: 5
-        read: 5
 ```
 
 Clients are identified by a *Client ID*, for instance `example` in the sample above. You can have as many clients as you want.
 
 For a complete overview of available properties, they type and default value please refer to the following table:
 
-| Configuration                        | Type            | Default                                            |
-|--------------------------------------|-----------------|----------------------------------------------------|
-| `rest.oauth.access-token-url`        | `URI`           | required, can be overridden by `ACCESS_TOKEN_URL`  |
-| `rest.oauth.scheduling-period`       | `int` (seconds) | `5`                                                |
-| `rest.oauth.timeouts.connect`        | `int` (seconds) | `1`                                                |
-| `rest.oauth.timeouts.read`           | `int` (seconds) | `2`                                                |
-| `rest.clients.<id>.base-url`         | `URI`           | none                                               |
-| `rest.clients.<id>.oauth`            |                 | none, disables OAuth2 security if omitted          |
-| `rest.clients.<id>.oauth.scopes`     | `List<String>`  | none                                               |
-| `rest.clients.<id>.timeouts.connect` | `int` (seconds) | `5`                                                |
-| `rest.clients.<id>.timeouts.read`    | `int` (seconds) | `5`                                                |
+| Configuration                        | Type            | Required | Default                          |
+|--------------------------------------|-----------------|----------|----------------------------------|
+| `rest.oauth.access-token-url`        | `URI`           | no       | env var `ACCESS_TOKEN_URL`       |   
+| `rest.oauth.scheduling-period`       | `int` (seconds) | no       | `5`                              |
+| `rest.oauth.timeouts.connect`        | `int` (seconds) | no       | `1`                              |
+| `rest.oauth.timeouts.read`           | `int` (seconds) | no       | `2`                              |
+| `rest.clients.<id>.base-url`         | `URI`           | no       | none                             |
+| `rest.clients.<id>.oauth`            |                 | no       | none, disables OAuth2 if omitted |
+| `rest.clients.<id>.oauth.scopes`     | `List<String>`  | no       | none                             |
 
 ## Usage
 

@@ -201,7 +201,6 @@
             <version>3.0</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>tracer-spring-boot-starter</artifactId>
