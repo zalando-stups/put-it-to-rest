@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ActiveProfiles;
 import org.zalando.stups.tokens.AccessTokens;
 
 import static org.mockito.Mockito.mock;
 
 @Configuration
 @ImportAutoConfiguration(RestClientAutoConfiguration.class)
+@ActiveProfiles("default")
 public class DefaultTestConfiguration {
 
     @Bean

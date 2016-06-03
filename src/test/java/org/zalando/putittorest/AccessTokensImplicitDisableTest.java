@@ -1,45 +1,46 @@
 package org.zalando.putittorest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.AsyncRestTemplate;
+import org.zalando.stups.tokens.AccessTokens;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.zalando.putittorest.Mocks.isMock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration
+@ActiveProfiles(profiles = "no-oauth", inheritProfiles = false)
 @Component
-public final class AsyncRestTemplateOverrideTest {
+public final class AccessTokensImplicitDisableTest {
 
     @Configuration
-    @Import(DefaultTestConfiguration.class)
+    @ImportAutoConfiguration(RestClientAutoConfiguration.class)
     public static class TestConfiguration {
 
         @Bean
-        @Qualifier("example")
-        public AsyncRestTemplate exampleAsyncRestTemplate() {
-            return mock(AsyncRestTemplate.class);
+        public ObjectMapper objectMapper() {
+            return new ObjectMapper();
         }
 
     }
 
-    @Autowired
-    @Qualifier("example")
-    private AsyncRestTemplate unit;
+    @Autowired(required = false)
+    private AccessTokens accessTokens;
 
     @Test
-    public void shouldOverride() {
-        assertThat(unit, isMock());
+    public void shouldImplicitlyDisable() {
+        assertThat(accessTokens, is(nullValue()));
     }
 
 }
