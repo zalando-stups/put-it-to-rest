@@ -238,9 +238,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.16</version>
                 <configuration>
-                    <parallel>classesAndMethods</parallel>
-                    <threadCount>1</threadCount>
-                    <perCoreThreadCount>true</perCoreThreadCount>
                     <environmentVariables>
                         <OAUTH2_ACCESS_TOKENS>example=example,ecb=ecb</OAUTH2_ACCESS_TOKENS>
                     </environmentVariables>
