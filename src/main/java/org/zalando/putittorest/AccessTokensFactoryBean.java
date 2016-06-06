@@ -8,6 +8,7 @@ import org.zalando.stups.tokens.Tokens;
 import javax.annotation.Nullable;
 import java.net.URI;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.zalando.putittorest.Timeouts.toMillis;
 
 class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
@@ -42,12 +43,15 @@ class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
         @Nullable final URI accessTokenUrl = oauth.getAccessTokenUrl();
 
         if (accessTokenUrl == null) {
-            return URI.create(System.getenv("ACCESS_TOKEN_URL"));
+            @Nullable final String env = System.getenv("ACCESS_TOKEN_URL");
+            checkArgument(env != null, "" +
+                    "Neither 'rest.oauth.access-token-url' nor 'ACCESS_TOKEN_URL' was set, " +
+                    "but at least one client requires OAuth");
+            return URI.create(env);
         }
 
         return accessTokenUrl;
     }
-
 
     @Override
     public AccessTokens getObject() {
