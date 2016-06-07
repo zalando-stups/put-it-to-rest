@@ -1,5 +1,13 @@
 package org.zalando.putittorest;
 
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
+import static com.google.common.base.CaseFormat.UPPER_CAMEL;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -8,14 +16,7 @@ import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.ManagedList;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Supplier;
-
-import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
-import static com.google.common.base.CaseFormat.UPPER_CAMEL;
+import org.zalando.putittorest.annotation.RestClient;
 
 final class Registry {
 
@@ -55,6 +56,10 @@ final class Registry {
         }
 
         final AbstractBeanDefinition definition = factory.get().getBeanDefinition();
+
+        final AutowireCandidateQualifier restClientQualifier = new AutowireCandidateQualifier(RestClient.class);
+        restClientQualifier.setAttribute("value", id);
+        definition.addQualifier(restClientQualifier);
 
         final AutowireCandidateQualifier qualifier = new AutowireCandidateQualifier(Qualifier.class);
         qualifier.setAttribute("value", id);
