@@ -21,6 +21,6 @@ public @interface RestClient {
     /**
      * @see Qualifier#value
      */
-    String value() default "";
+    String value();
 
 }
