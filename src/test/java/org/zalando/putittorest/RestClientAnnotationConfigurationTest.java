@@ -9,8 +9,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.stereotype.Component;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 import org.zalando.putittorest.annotation.RestClient;
@@ -20,11 +18,6 @@ import org.zalando.stups.oauth2.spring.client.StupsOAuth2RestTemplate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(DefaultTestConfiguration.class)
-@TestPropertySource(properties = {
-        "rest.clients.example.timeouts.connect: 2",
-        "rest.clients.example.timeouts.read: 3",
-})
-@Component
 public class RestClientAnnotationConfigurationTest {
 
     @RestClient("example")
