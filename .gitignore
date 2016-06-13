@@ -6,3 +6,10 @@
 
 ### Maven ###
 target/
+
+### Eclipse ###
+.apt_generated
+.settings
+.classpath
+.project
+.factorypath
