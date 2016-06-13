@@ -112,8 +112,9 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
     private String registerHttpMessageConverters(final String id) {
         return registry.register(id, HttpMessageConverters.class, () ->
-                BeanDefinitionBuilder.genericBeanDefinition(HttpMessageConverters.class).
-                        addConstructorArgValue(Registry.list(
+                BeanDefinitionBuilder.genericBeanDefinition(HttpMessageConverters.class)
+                        .addConstructorArgValue(false)
+                        .addConstructorArgValue(Registry.list(
                                 BeanDefinitionBuilder.genericBeanDefinition(StringHttpMessageConverter.class)
                                         .addPropertyValue("writeAcceptCharset", false)
                                         .getBeanDefinition(),
