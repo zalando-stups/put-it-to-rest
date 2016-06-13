@@ -23,8 +23,7 @@ rest.clients:
 ```
 
 ```java
-@Autowired
-@Qualifier("example")
+@RestClient("example")
 private Rest example;
 ```
 
@@ -99,8 +98,7 @@ For a complete overview of available properties, they type and default value ple
 After configuring your clients, as shown in the last section, you can now easily inject them:
 
 ```java
-@Autowired
-@Qualifier("example")
+@RestClient("example")
 private Rest example;
 ```
 
