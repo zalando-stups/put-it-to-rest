@@ -73,6 +73,9 @@ rest:
   clients:
     example:
       base-url: https://example.com
+      timeouts:
+        connect: 2
+        read: 3
       oauth:
         scopes:
           - uid
@@ -90,6 +93,8 @@ For a complete overview of available properties, they type and default value ple
 | `rest.oauth.timeouts.connect`        | `int` (seconds) | no       | `1`                              |
 | `rest.oauth.timeouts.read`           | `int` (seconds) | no       | `2`                              |
 | `rest.clients.<id>.base-url`         | `URI`           | no       | none                             |
+| `rest.clients.<id>.timeouts.connect` | `int` (seconds) | no       | `5`                              |
+| `rest.clients.<id>.timeouts.read`    | `int` (seconds) | no       | `5`                              |
 | `rest.clients.<id>.oauth`            |                 | no       | none, disables OAuth2 if omitted |
 | `rest.clients.<id>.oauth.scopes`     | `List<String>`  | no       | none                             |
 
