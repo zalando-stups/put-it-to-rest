@@ -23,23 +23,21 @@ import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFacto
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
-import org.zalando.riptide.AsyncRest;
-import org.zalando.riptide.PassThroughResponseErrorHandler;
 import org.zalando.riptide.Rest;
-import org.zalando.stups.oauth2.spring.client.StupsOAuth2RestTemplate;
-import org.zalando.stups.oauth2.spring.client.StupsTokensAccessTokenProvider;
+import org.zalando.stups.oauth2.httpcomponents.AccessTokensRequestInterceptor;
 import org.zalando.stups.tokens.AccessTokens;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class RestClientPostProcessor implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
 
     private ConfigurableEnvironment environment;
     private Registry registry;
+    private RestSettings settings;
 
     @Override
     public void setEnvironment(final Environment environment) {
@@ -49,60 +47,38 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
     @Override
     public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
-        final RestSettings settings = getSettings();
         this.registry = new Registry(beanDefinitionRegistry);
 
-        settings.getClients().forEach((id, client) -> {
+        getSettings().getClients().forEach((id, client) -> {
             @Nullable final OAuth oauth = client.getOauth();
             final Timeouts timeouts = client.getTimeouts();
+            final String baseUrl = client.getBaseUrl();
 
-            final String templateId = Registry.generateBeanName(id, RestTemplate.class);
+            final String convertersId = registerHttpMessageConverters(id);
 
-            if (registry.isNotRegistered(templateId)) {
-                final String factoryId = registerClientHttpRequestFactory(id, timeouts);
-                final String convertersId = registerHttpMessageConverters(id);
+            final String asyncFactoryId = registerAsyncClientHttpRequestFactory(id, timeouts, oauth);
+            registerRest(id, asyncFactoryId, convertersId, baseUrl);
 
-                if (oauth == null) {
-                    registerRestTemplate(id, client, factoryId, convertersId);
-                } else {
-                    registerStupsOAuth2RestTemplate(settings, id, client, factoryId, convertersId);
-                }
-            }
+            final String factoryId = registerClientHttpRequestFactory(id, timeouts, oauth);
+            registerRestTemplate(id, factoryId, convertersId, baseUrl);
 
-            registerRest(id, templateId);
-            registerAsyncRest(id, timeouts, templateId);
         });
     }
 
     @VisibleForTesting
     @SneakyThrows
     RestSettings getSettings() {
-        final PropertiesConfigurationFactory<RestSettings> factory =
-                new PropertiesConfigurationFactory<>(RestSettings.class);
+        if (settings == null) {
+            final PropertiesConfigurationFactory<RestSettings> factory =
+                    new PropertiesConfigurationFactory<>(RestSettings.class);
 
-        factory.setTargetName("rest");
-        factory.setPropertySources(environment.getPropertySources());
-        factory.setConversionService(environment.getConversionService());
+            factory.setTargetName("rest");
+            factory.setPropertySources(environment.getPropertySources());
+            factory.setConversionService(environment.getConversionService());
 
-        return factory.getObject();
-    }
-
-    private String registerClientHttpRequestFactory(final String id,
-            final Timeouts timeouts) {
-        return registry.register(id, ClientHttpRequestFactory.class, () -> {
-            final BeanDefinitionBuilder factory = BeanDefinitionBuilder.genericBeanDefinition(HttpComponentsClientHttpRequestFactory.class);
-            factory.addConstructorArgReference(registerHttpClient(id));
-            configureTimeouts(factory, timeouts);
-            return factory;
-        });
-    }
-
-    private String registerHttpClient(final String id) {
-        return registry.register(id, HttpClient.class, () -> {
-            final BeanDefinitionBuilder httpClient = BeanDefinitionBuilder.genericBeanDefinition(HttpClientFactoryBean.class);
-            configureInterceptors(httpClient);
-            return httpClient;
-        });
+            settings = factory.getObject();
+        }
+        return settings;
     }
 
     private void configureTimeouts(final BeanDefinitionBuilder builder, final Timeouts timeouts) {
@@ -128,46 +104,6 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         return registry.isRegistered(beanName) ? beanName : "objectMapper";
     }
 
-    private String registerRestTemplate(final String id, final Client client,
-            final String httpClientFactoryId, final String httpMessageConvertersId) {
-        return registry.register(id, RestTemplate.class, () -> {
-            final BeanDefinitionBuilder template = BeanDefinitionBuilder.genericBeanDefinition(RestTemplate.class);
-            template.addConstructorArgReference(httpClientFactoryId);
-            configureRestTemplate(template, client, httpMessageConvertersId);
-            return template;
-        });
-    }
-
-    private String registerStupsOAuth2RestTemplate(final RestSettings settings,
-            final String id, final Client client, final String httpClientFactoryId,
-            final String httpMessageConvertersId) {
-        return registry.register(id, RestTemplate.class, () -> {
-            final BeanDefinitionBuilder template = BeanDefinitionBuilder.genericBeanDefinition(StupsOAuth2RestTemplate.class);
-            template.addConstructorArgValue(BeanDefinitionBuilder.genericBeanDefinition(StupsTokensAccessTokenProvider.class)
-                    .addConstructorArgValue(id)
-                    .addConstructorArgReference(registerAccessTokens(settings))
-                    .getBeanDefinition());
-            template.addConstructorArgReference(httpClientFactoryId);
-            configureRestTemplate(template, client, httpMessageConvertersId);
-            return template;
-        });
-    }
-
-    private void configureRestTemplate(final BeanDefinitionBuilder builder, final Client client,
-            final String messageConvertersId) {
-        builder.addPropertyValue("errorHandler", new PassThroughResponseErrorHandler());
-        final DefaultUriTemplateHandler handler = new DefaultUriTemplateHandler();
-        handler.setBaseUrl(client.getBaseUrl());
-        builder.addPropertyValue("uriTemplateHandler", handler);
-
-        final AbstractBeanDefinition converters = BeanDefinitionBuilder.genericBeanDefinition()
-                .setFactoryMethod("getConverters")
-                .getBeanDefinition();
-        converters.setFactoryBeanName(messageConvertersId);
-
-        builder.addPropertyValue("messageConverters", converters);
-    }
-
     private String registerAccessTokens(final RestSettings settings) {
         return registry.register(AccessTokens.class, () -> {
             final BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(AccessTokensFactoryBean.class);
@@ -176,59 +112,100 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         });
     }
 
-    private String registerRest(final String id, final String restTemplateId) {
+    private String registerRest(final String id, final String factoryId, final String convertersId, @Nullable final String baseUrl) {
         return registry.register(id, Rest.class, () -> {
             final BeanDefinitionBuilder rest = BeanDefinitionBuilder.genericBeanDefinition(Rest.class);
             rest.setFactoryMethod("create");
-            rest.addConstructorArgReference(restTemplateId);
+            rest.addConstructorArgReference(factoryId);
+
+            final AbstractBeanDefinition converters = BeanDefinitionBuilder.genericBeanDefinition()
+                    .setFactoryMethod("getConverters")
+                    .getBeanDefinition();
+            converters.setFactoryBeanName(convertersId);
+            rest.addConstructorArgValue(converters);
+
+            final DefaultUriTemplateHandler handler = new DefaultUriTemplateHandler();
+            handler.setBaseUrl(baseUrl);
+
+            rest.addConstructorArgValue(handler);
             return rest;
         });
     }
 
-    private String registerAsyncRest(final String id, final Timeouts timeouts,
-            final String restTemplateId) {
-        return registry.register(id, AsyncRest.class, () -> {
-            final BeanDefinitionBuilder rest = BeanDefinitionBuilder.genericBeanDefinition(AsyncRest.class);
-            rest.setFactoryMethod("create");
-            rest.addConstructorArgReference(registerAsyncRestTemplate(id, timeouts, restTemplateId));
-            return rest;
-        });
-    }
-
-    private String registerAsyncRestTemplate(final String id,
-            final Timeouts timeouts, final String restTemplateId) {
-        return registry.register(id, AsyncRestTemplate.class, () -> {
-            final BeanDefinitionBuilder template = BeanDefinitionBuilder.genericBeanDefinition(AsyncRestTemplate.class);
-            template.addConstructorArgReference(registerAsyncClientHttpRequestFactory(id, timeouts));
-            template.addConstructorArgReference(restTemplateId);
-            return template;
-        });
-    }
-
-    private String registerAsyncClientHttpRequestFactory(final String id,
-            final Timeouts timeouts) {
+    private String registerAsyncClientHttpRequestFactory(final String id, final Timeouts timeouts, @Nullable final OAuth oauth) {
         return registry.register(id, AsyncClientHttpRequestFactory.class, () -> {
             final BeanDefinitionBuilder factory =
                     BeanDefinitionBuilder.genericBeanDefinition(HttpComponentsAsyncClientHttpRequestFactory.class);
-            factory.addConstructorArgReference(registerHttpAsyncClient(id));
+            factory.addConstructorArgReference(registerHttpAsyncClient(id, oauth));
             configureTimeouts(factory, timeouts);
             return factory;
         });
     }
 
-    private String registerHttpAsyncClient(final String id) {
+    private String registerHttpAsyncClient(final String id, @Nullable final OAuth oauth) {
         return registry.register(id, HttpAsyncClient.class, () -> {
             final BeanDefinitionBuilder httpClient = BeanDefinitionBuilder.genericBeanDefinition(HttpAsyncClientFactoryBean.class);
-            configureInterceptors(httpClient);
+            configureInterceptors(httpClient, id, oauth);
             return httpClient;
         });
     }
 
-    @Hack("In order to avoid a runtime dependency on Tracer and Logbook")
-    private void configureInterceptors(final BeanDefinitionBuilder builder) {
-        if (registry.isRegistered("tracerHttpRequestInterceptor")) {
-            builder.addPropertyValue("firstRequestInterceptors", Registry.list(Registry.ref("tracerHttpRequestInterceptor")));
+    private String registerRestTemplate(final String id, final String factoryId, final String convertersId, final String baseUrl) {
+        return registry.register(id, RestTemplate.class, () -> {
+            final BeanDefinitionBuilder template = BeanDefinitionBuilder.genericBeanDefinition(RestTemplate.class);
+            template.addConstructorArgReference(factoryId);
+            configureRestTemplate(template, baseUrl, convertersId);
+            return template;
+        });
+    }
+
+    private void configureRestTemplate(final BeanDefinitionBuilder builder, final String baseUrl, final String convertersId) {
+        final DefaultUriTemplateHandler handler = new DefaultUriTemplateHandler();
+        handler.setBaseUrl(baseUrl);
+        builder.addPropertyValue("uriTemplateHandler", handler);
+
+        final AbstractBeanDefinition converters = BeanDefinitionBuilder.genericBeanDefinition()
+                .setFactoryMethod("getConverters")
+                .getBeanDefinition();
+        converters.setFactoryBeanName(convertersId);
+
+        builder.addPropertyValue("messageConverters", converters);
+    }
+
+    private String registerClientHttpRequestFactory(final String id, final Timeouts timeouts, final OAuth oauth) {
+        return registry.register(id, ClientHttpRequestFactory.class, () -> {
+            final BeanDefinitionBuilder factory = BeanDefinitionBuilder.genericBeanDefinition(HttpComponentsClientHttpRequestFactory.class);
+            factory.addConstructorArgReference(registerHttpClient(id, oauth));
+            configureTimeouts(factory, timeouts);
+            factory.getBeanDefinition().setPrimary(true); // Async factory extends HttpComponentsClientHttpRequestFactory
+            return factory;
+        });
+    }
+
+    private String registerHttpClient(final String id, final OAuth oauth) {
+        return registry.register(id, HttpClient.class, () -> {
+            final BeanDefinitionBuilder httpClient = BeanDefinitionBuilder.genericBeanDefinition(HttpClientFactoryBean.class);
+            configureInterceptors(httpClient, id, oauth);
+            return httpClient;
+        });
+    }
+
+    @Hack("In order to avoid any runtime dependency")
+    private void configureInterceptors(final BeanDefinitionBuilder builder, final String id, @Nullable final OAuth oauth) {
+        final List<Object> requestInterceptors = Registry.list();
+
+        if (oauth != null) {
+            requestInterceptors.add(BeanDefinitionBuilder.genericBeanDefinition(AccessTokensRequestInterceptor.class)
+                    .addConstructorArgValue(id)
+                    .addConstructorArgReference(registerAccessTokens(getSettings()))
+                    .getBeanDefinition());
         }
+
+        if (registry.isRegistered("tracerHttpRequestInterceptor")) {
+            requestInterceptors.add(Registry.ref("tracerHttpRequestInterceptor"));
+        }
+
+        builder.addPropertyValue("firstRequestInterceptors", requestInterceptors);
 
         if (registry.isRegistered("logbookHttpRequestInterceptor")) {
             builder.addPropertyValue("lastRequestInterceptors", Registry.list(Registry.ref("logbookHttpRequestInterceptor")));
