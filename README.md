@@ -43,7 +43,7 @@ private Rest example;
 - Java 8
 - Any build tool using Maven Central, or direct download
 - Spring Boot
-- Apache HTTP Client
+- Apache HTTP Async Client
 
 ## Installation
 
@@ -120,12 +120,12 @@ private Rest example;
 
 All beans that are created for each client use the *Client ID*, in this case `example`, as their qualifier.
 
-Besides `Rest`, you can also alternatively inject any of the following types directly:
-- `RestTemplate`
-- `ClientHttpRequestFactory`
-- `HttpClient`
+Besides `Rest`, you can also alternatively inject any of the following types per client directly:
 - `AsyncClientHttpRequestFactory`
 - `HttpAsyncClient`
+- `HttpMessageConverters`
+
+A global `AccessTokens` bean is also provided.
 
 ## Customization
 
@@ -156,9 +156,6 @@ The following table shows all beans with their respective name (for the `example
 |----------------------------------------|---------------------------------|----------------------------|
 | `accessToken` (no client prefix!)      | `AccessTokens`                  | OAuth settings             |
 | `exampleHttpMessageConverters`         | `HttpMessageConverters`         | Text and JSON              |
-| `exampleHttpClient`                    | `HttpClient`                    | Interceptors               |
-| `exampleClientHttpRequestFactory`      | `ClientHttpRequestFactory`      | Timeouts                   |
-| `exampleRestTemplate`                  | `RestTemplate`                  | Base URL                   |
 | `exampleHttpAsyncClient`               | `HttpAsyncClient`               | Interceptors               |
 | `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory` | Timeouts                   |
 | `exampleRest`                          | `Rest`                          | Base URL                   |

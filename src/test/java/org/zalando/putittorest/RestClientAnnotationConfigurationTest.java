@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.RestTemplate;
 import org.zalando.putittorest.annotation.RestClient;
 import org.zalando.riptide.Rest;
 
@@ -19,24 +18,16 @@ public class RestClientAnnotationConfigurationTest {
     @RestClient("example")
     private Rest exampleRest;
 
-    @RestClient("example")
-    private RestTemplate exampleRestTemplate;
-
     @RestClient("ecb")
     private Rest ecbRest;
-
-    @RestClient("example")
-    private RestTemplate ecbRestTemplate;
 
     @Test
     public void shouldWireOAuthCorrectly() {
         assertThat(exampleRest, is(notNullValue()));
-        assertThat(exampleRestTemplate, is(notNullValue()));
     }
 
     @Test
     public void shouldWireNonOAuthCorrectly() {
         assertThat(ecbRest, is(notNullValue()));
-        assertThat(ecbRestTemplate, is(notNullValue()));
     }
 }

@@ -7,10 +7,3 @@
 [AsyncClientHttpRequestFactory{bg:greenyellow}]-.->[HttpAsyncClient]
 [Rest{bg:greenyellow}]-.->[AsyncClientHttpRequestFactory]
 [Rest]-.->[HttpMessageConverters]
-
-[HttpClient{bg:greenyellow}]-.->[TracerHttpRequestInterceptor]
-[HttpClient]-.->[LogbookHttpRequestInterceptor]
-[HttpClient]-.->[LogbookHttpResponseInterceptor]
-[ClientHttpRequestFactory{bg:greenyellow}]-.->[HttpClient]
-[RestTemplate{bg:greenyellow]-.->[ClientHttpRequestFactory]
-[RestTemplate]-.->[HttpMessageConverters]

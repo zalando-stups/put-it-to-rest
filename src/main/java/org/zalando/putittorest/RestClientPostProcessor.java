@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gag.annotation.remark.Hack;
 import lombok.SneakyThrows;
-import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -18,12 +17,9 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.http.client.AsyncClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
 import org.zalando.riptide.Rest;
 import org.zalando.stups.oauth2.httpcomponents.AccessTokensRequestInterceptor;
@@ -58,9 +54,6 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
             final String asyncFactoryId = registerAsyncClientHttpRequestFactory(id, timeouts, oauth);
             registerRest(id, asyncFactoryId, convertersId, baseUrl);
-
-            final String factoryId = registerClientHttpRequestFactory(id, timeouts, oauth);
-            registerRestTemplate(id, factoryId, convertersId, baseUrl);
 
         });
     }
@@ -145,46 +138,6 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
     private String registerHttpAsyncClient(final String id, @Nullable final OAuth oauth) {
         return registry.register(id, HttpAsyncClient.class, () -> {
             final BeanDefinitionBuilder httpClient = BeanDefinitionBuilder.genericBeanDefinition(HttpAsyncClientFactoryBean.class);
-            configureInterceptors(httpClient, id, oauth);
-            return httpClient;
-        });
-    }
-
-    private String registerRestTemplate(final String id, final String factoryId, final String convertersId, final String baseUrl) {
-        return registry.register(id, RestTemplate.class, () -> {
-            final BeanDefinitionBuilder template = BeanDefinitionBuilder.genericBeanDefinition(RestTemplate.class);
-            template.addConstructorArgReference(factoryId);
-            configureRestTemplate(template, baseUrl, convertersId);
-            return template;
-        });
-    }
-
-    private void configureRestTemplate(final BeanDefinitionBuilder builder, final String baseUrl, final String convertersId) {
-        final DefaultUriTemplateHandler handler = new DefaultUriTemplateHandler();
-        handler.setBaseUrl(baseUrl);
-        builder.addPropertyValue("uriTemplateHandler", handler);
-
-        final AbstractBeanDefinition converters = BeanDefinitionBuilder.genericBeanDefinition()
-                .setFactoryMethod("getConverters")
-                .getBeanDefinition();
-        converters.setFactoryBeanName(convertersId);
-
-        builder.addPropertyValue("messageConverters", converters);
-    }
-
-    private String registerClientHttpRequestFactory(final String id, final Timeouts timeouts, final OAuth oauth) {
-        return registry.register(id, ClientHttpRequestFactory.class, () -> {
-            final BeanDefinitionBuilder factory = BeanDefinitionBuilder.genericBeanDefinition(HttpComponentsClientHttpRequestFactory.class);
-            factory.addConstructorArgReference(registerHttpClient(id, oauth));
-            configureTimeouts(factory, timeouts);
-            factory.getBeanDefinition().setPrimary(true); // Async factory extends HttpComponentsClientHttpRequestFactory
-            return factory;
-        });
-    }
-
-    private String registerHttpClient(final String id, final OAuth oauth) {
-        return registry.register(id, HttpClient.class, () -> {
-            final BeanDefinitionBuilder httpClient = BeanDefinitionBuilder.genericBeanDefinition(HttpClientFactoryBean.class);
             configureInterceptors(httpClient, id, oauth);
             return httpClient;
         });
