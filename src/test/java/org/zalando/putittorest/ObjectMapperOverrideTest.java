@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.AsyncRestTemplate;
 
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -25,6 +24,11 @@ public final class ObjectMapperOverrideTest {
     @Configuration
     @Import(DefaultTestConfiguration.class)
     public static class TestConfiguration {
+
+        @Bean
+        public ObjectMapper jacksonObjectMapper() {
+            return mock(ObjectMapper.class);
+        }
 
         @Bean
         @Qualifier("example")

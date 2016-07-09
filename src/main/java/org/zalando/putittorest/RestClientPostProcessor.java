@@ -94,7 +94,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
     private String findObjectMapper(final String id) {
         final String beanName = Registry.generateBeanName(id, ObjectMapper.class);
-        return registry.isRegistered(beanName) ? beanName : "objectMapper";
+        return registry.isRegistered(beanName) ? beanName : "jacksonObjectMapper";
     }
 
     private String registerAccessTokens(final RestSettings settings) {
