@@ -1,6 +1,5 @@
 package org.zalando.putittorest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,7 +8,6 @@ import org.springframework.beans.PropertyBatchUpdateException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -25,12 +23,6 @@ public final class AccessTokensMissingTest {
     @Configuration
     @EnableAutoConfiguration
     public static class TestConfiguration {
-
-        @Bean
-        @Primary
-        public ObjectMapper objectMapper() {
-            return new ObjectMapper();
-        }
 
         @Bean
         @Primary

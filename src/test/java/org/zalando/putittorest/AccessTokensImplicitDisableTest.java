@@ -1,12 +1,11 @@
 package org.zalando.putittorest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
@@ -16,7 +15,6 @@ import org.zalando.stups.tokens.AccessTokens;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.zalando.putittorest.Mocks.isMock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration
@@ -25,13 +23,8 @@ import static org.zalando.putittorest.Mocks.isMock;
 public final class AccessTokensImplicitDisableTest {
 
     @Configuration
-    @ImportAutoConfiguration(RestClientAutoConfiguration.class)
+    @ImportAutoConfiguration({RestClientAutoConfiguration.class, JacksonAutoConfiguration.class})
     public static class TestConfiguration {
-
-        @Bean
-        public ObjectMapper objectMapper() {
-            return new ObjectMapper();
-        }
 
     }
 
