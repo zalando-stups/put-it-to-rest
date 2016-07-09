@@ -5,7 +5,9 @@ import java.util.concurrent.TimeUnit;
 public final class Timeouts {
 
     private int connect;
+    private TimeUnit connectUnit = TimeUnit.SECONDS;
     private int read;
+    private TimeUnit readUnit = TimeUnit.SECONDS;
 
     public Timeouts(final int connect, final int read) {
         this.connect = connect;
@@ -20,6 +22,14 @@ public final class Timeouts {
         this.connect = connect;
     }
 
+    public TimeUnit getConnectUnit() {
+        return connectUnit;
+    }
+
+    public void setConnectUnit(final TimeUnit connectUnit) {
+        this.connectUnit = connectUnit;
+    }
+
     public int getRead() {
         return read;
     }
@@ -28,8 +38,12 @@ public final class Timeouts {
         this.read = read;
     }
 
-    public static int toMillis(final int value) {
-        return (int) TimeUnit.SECONDS.toMillis(value);
+    public TimeUnit getReadUnit() {
+        return readUnit;
+    }
+
+    public void setReadUnit(final TimeUnit readUnit) {
+        this.readUnit = readUnit;
     }
 
 }

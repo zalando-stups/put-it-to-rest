@@ -27,7 +27,6 @@ import org.zalando.stups.tokens.AccessTokens;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class RestClientPostProcessor implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
 
@@ -75,8 +74,8 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
     }
 
     private void configureTimeouts(final BeanDefinitionBuilder builder, final Timeouts timeouts) {
-        builder.addPropertyValue("connectTimeout", (int) TimeUnit.SECONDS.toMillis(timeouts.getConnect()));
-        builder.addPropertyValue("readTimeout", (int) TimeUnit.SECONDS.toMillis(timeouts.getRead()));
+        builder.addPropertyValue("connectTimeout", (int) timeouts.getConnectUnit().toMillis(timeouts.getConnect()));
+        builder.addPropertyValue("readTimeout", (int) timeouts.getReadUnit().toMillis(timeouts.getRead()));
     }
 
     private String registerHttpMessageConverters(final String id) {

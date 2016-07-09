@@ -79,14 +79,18 @@ rest:
     access-token-url: https://auth.example.com
     scheduling-period: 10
     timeouts:
-      connect: 1
-      read: 2
+      connect: 1000
+      connect-unit: milliseconds
+      read: 1500
+      read-unit: milliseconds
   clients:
     example:
       base-url: https://example.com
       timeouts:
         connect: 2
+        connect-unit: seconds
         read: 3
+        read-unit: seconds
       oauth:
         scopes:
           - uid
@@ -97,17 +101,21 @@ Clients are identified by a *Client ID*, for instance `example` in the sample ab
 
 For a complete overview of available properties, they type and default value please refer to the following table:
 
-| Configuration                        | Type            | Required | Default                          |
-|--------------------------------------|-----------------|----------|----------------------------------|
-| `rest.oauth.access-token-url`        | `URI`           | no       | env var `ACCESS_TOKEN_URL`       |   
-| `rest.oauth.scheduling-period`       | `int` (seconds) | no       | `5`                              |
-| `rest.oauth.timeouts.connect`        | `int` (seconds) | no       | `1`                              |
-| `rest.oauth.timeouts.read`           | `int` (seconds) | no       | `2`                              |
-| `rest.clients.<id>.base-url`         | `URI`           | no       | none                             |
-| `rest.clients.<id>.timeouts.connect` | `int` (seconds) | no       | `5`                              |
-| `rest.clients.<id>.timeouts.read`    | `int` (seconds) | no       | `5`                              |
-| `rest.clients.<id>.oauth`            |                 | no       | none, disables OAuth2 if omitted |
-| `rest.clients.<id>.oauth.scopes`     | `List<String>`  | no       | none                             |
+| Configuration                             | Type           | Required | Default                          |
+|-------------------------------------------|----------------|----------|----------------------------------|
+| `rest.oauth.access-token-url`             | `URI`          | no       | env var `ACCESS_TOKEN_URL`       |   
+| `rest.oauth.scheduling-period`            | `int`          | no       | `5`                              |
+| `rest.oauth.timeouts.connect`             | `int`          | no       | `1`                              |
+| `rest.oauth.timeouts.connect-unit`        | `TimeUnit`     | no       | `seconds`                        |
+| `rest.oauth.timeouts.read`                | `int`          | no       | `2`                              |
+| `rest.oauth.timeouts.read-unit`           | `TimeUnit`     | no       | `seconds`                        |
+| `rest.clients.<id>.base-url`              | `URI`          | no       | none                             |
+| `rest.clients.<id>.timeouts.connect`      | `int`          | no       | `5`                              |
+| `rest.clients.<id>.timeouts.connect-unit` | `TimeUnit`     | no       | `seconds`                        |
+| `rest.clients.<id>.timeouts.read`         | `int`          | no       | `5`                              |
+| `rest.clients.<id>.timeouts.read-unit`    | `TimeUnit`     | no       | `seconds`                        |
+| `rest.clients.<id>.oauth`                 |                | no       | none, disables OAuth2 if omitted |
+| `rest.clients.<id>.oauth.scopes`          | `List<String>` | no       | none                             |
 
 ## Usage
 

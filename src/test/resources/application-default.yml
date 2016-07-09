@@ -2,6 +2,11 @@ rest:
   clients:
     example:
       base-url: https://example.com
+      timeouts:
+        connect: 2000
+        connect-unit: milliseconds
+        read: 3000
+        read-unit: milliseconds
       oauth.scopes:
         - example.read
     ecb:
