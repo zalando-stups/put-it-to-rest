@@ -26,6 +26,7 @@ class HttpAsyncClientFactoryBean implements FactoryBean<HttpAsyncClient> {
 
     @Override
     public HttpAsyncClient getObject() {
+        // TODO: builder.setConnectionTimeToLive(30, TimeUnit.SECONDS);
         return builder.build();
     }
 

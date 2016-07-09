@@ -55,7 +55,7 @@
         <slf4j.version>1.7.21</slf4j.version>
         <spring.version>4.2.5.RELEASE</spring.version>
         <spring-boot.version>1.3.3.RELEASE</spring-boot.version>
-        <riptide.version>1.2.0</riptide.version>
+        <riptide.version>2.0.0-RC1</riptide.version>
     </properties>
 
     <dependencyManagement>
@@ -116,21 +116,22 @@
         <!-- zalando -->
         <dependency>
             <groupId>org.zalando</groupId>
-            <artifactId>riptide</artifactId>
+            <artifactId>riptide-core</artifactId>
             <version>${riptide.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.zalando.stups</groupId>
+            <artifactId>tokens</artifactId>
+            <version>0.9.8</version>
+            <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.zalando.stups</groupId>
+            <artifactId>stups-http-components-oauth2</artifactId>
+            <version>1.0.14</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpasyncclient</artifactId>
@@ -141,16 +142,6 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.zalando.stups</groupId>
-            <artifactId>stups-spring-oauth2-client</artifactId>
-            <version>1.0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.zalando.stups</groupId>
-            <artifactId>tokens</artifactId>
-            <version>0.9.8</version>
         </dependency>
 
         <!-- testing -->

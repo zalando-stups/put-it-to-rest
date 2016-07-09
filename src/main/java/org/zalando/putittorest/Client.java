@@ -8,6 +8,7 @@ public final class Client {
     private OAuth oauth;
     private final Timeouts timeouts = new Timeouts(5, 5);
 
+    @Nullable
     public String getBaseUrl() {
         return baseUrl;
     }

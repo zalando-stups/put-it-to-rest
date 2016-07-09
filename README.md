@@ -33,8 +33,7 @@ private Rest example;
   - [Riptide](https://github.com/zalando/riptide)
   - [Logbook](https://github.com/zalando/logbook)
   - [Tracer](https://github.com/zalando/tracer)
-  - [Tokens](https://github.com/zalando-stups/tokens)
-  - [STUPS Spring OAuth2 Client](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-spring-oauth2-client)
+  - [Tokens](https://github.com/zalando-stups/tokens) (plus [interceptor](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-http-components-oauth2))
   - [Jackson 2](https://github.com/FasterXML/jackson)
 - [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
 - Sensible defaults
@@ -44,7 +43,7 @@ private Rest example;
 - Java 8
 - Any build tool using Maven Central, or direct download
 - Spring Boot
-- Apache HTTP Client
+- Apache HTTP Async Client
 
 ## Installation
 
@@ -55,6 +54,18 @@ Add the following dependency to your project:
     <groupId>org.zalando</groupId>
     <artifactId>put-it-to-rest</artifactId>
     <version>${put-it-to-rest.version}</version>
+</dependency>
+```
+
+If you want OAuth support you need to additionally add [stups-spring-oauth2-support](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-http-components-oauth2) to your project. 
+It comes with [Tokens](https://github.com/zalando-stups/tokens) equipped. 
+
+```xml
+<!-- if you need OAuth support additionally add: -->
+<dependency>
+    <groupId>org.zalando.stups</groupId>
+    <artifactId>stups-http-components-oauth2</artifactId>
+    <version>$stups-http-components-oauth2.version}{</version>
 </dependency>
 ```
 
@@ -109,10 +120,12 @@ private Rest example;
 
 All beans that are created for each client use the *Client ID*, in this case `example`, as their qualifier.
 
-Besides `Rest`, you can also alternatively inject any of the following types directly:
-- `RestTemplate`
-- `AsyncRest`
-- `AsyncRestTemplate`
+Besides `Rest`, you can also alternatively inject any of the following types per client directly:
+- `AsyncClientHttpRequestFactory`
+- `HttpAsyncClient`
+- `HttpMessageConverters`
+
+A global `AccessTokens` bean is also provided.
 
 ## Customization
 
@@ -122,7 +135,7 @@ be created:
 ![Client Dependency Graph](docs/graph.png)
 
 Regarding the other colors:
-- *yellow*: will be created once and then shared across different clients
+- *yellow*: will be created once and then shared across different clients (if needed)
 - *red*: mandatory dependency
 - *grey*: optional dependency
 
@@ -142,16 +155,10 @@ The following table shows all beans with their respective name (for the `example
 | Bean Name                              | Bean Type                       | Configures by default      |
 |----------------------------------------|---------------------------------|----------------------------|
 | `accessToken` (no client prefix!)      | `AccessTokens`                  | OAuth settings             |
-| `exampleHttpClient`                    | `HttpClient`                    | Interceptors               |
-| `exampleClientHttpRequestFactory`      | `ClientHttpRequestFactory`      | Timeouts                   |
 | `exampleHttpMessageConverters`         | `HttpMessageConverters`         | Text and JSON              |
-| `exampleRestTemplate`                  | `RestTemplate`                  | Base URL and error handler |
-| `exampleRestTemplate`                  | `StupsOAuth2RestTemplate`       | Base URL and error handler |
-| `exampleRest`                          | `Rest`                          |                            |
 | `exampleHttpAsyncClient`               | `HttpAsyncClient`               | Interceptors               |
 | `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory` | Timeouts                   |
-| `exampleAsyncRestTemplate`             | `AsyncRestTemplate`             |                            |
-| `exampleAsyncRest`                     | `AsyncRest`                     |                            |
+| `exampleRest`                          | `Rest`                          | Base URL                   |
 
 If you override a bean then all of its dependencies (see the [graph](#customization)), will **not** be registered,
 unless required by some other bean.
