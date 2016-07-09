@@ -6,10 +6,16 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.zalando.logbook.spring.LogbookAutoConfiguration;
+import org.zalando.tracer.spring.TracerAutoConfiguration;
 
 @Configuration
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-@AutoConfigureAfter(JacksonAutoConfiguration.class)
+@AutoConfigureAfter({
+        JacksonAutoConfiguration.class,
+        LogbookAutoConfiguration.class,
+        TracerAutoConfiguration.class,
+})
 public class RestClientAutoConfiguration {
 
     @Bean
