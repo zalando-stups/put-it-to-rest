@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import java.net.URI;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.zalando.putittorest.Timeouts.toMillis;
 
 class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
 
@@ -22,8 +21,8 @@ class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
 
         this.builder = Tokens.createAccessTokensWithUri(accessTokenUrl)
                 .schedulingPeriod(oAuth.getSchedulingPeriod())
-                .connectTimeout(toMillis(timeouts.getConnect()))
-                .socketTimeout(toMillis(timeouts.getRead()));
+                .connectTimeout((int) timeouts.getConnectUnit().toMillis(timeouts.getConnect()))
+                .socketTimeout((int) timeouts.getReadUnit().toMillis(timeouts.getRead()));
         // TODO custom HttpProvider with interceptors
 
         settings.getClients().forEach((id, client) -> {
