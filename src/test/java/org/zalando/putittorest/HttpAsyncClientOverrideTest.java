@@ -1,7 +1,6 @@
 package org.zalando.putittorest;
 
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.nio.client.HttpAsyncClient;
+import org.apache.http.client.HttpClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +27,15 @@ public final class HttpAsyncClientOverrideTest {
 
         @Bean
         @Qualifier("example")
-        public CloseableHttpAsyncClient exampleHttpAsyncClient() { // TODO document
-            return mock(CloseableHttpAsyncClient.class);
+        public HttpClient exampleHttpClient() { // TODO document
+            return mock(HttpClient.class);
         }
 
     }
 
     @Autowired
     @Qualifier("example")
-    private HttpAsyncClient unit;
+    private HttpClient unit;
 
     @Test
     public void shouldOverride() {
