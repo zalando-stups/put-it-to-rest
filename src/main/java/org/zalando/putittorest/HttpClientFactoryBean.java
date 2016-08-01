@@ -9,6 +9,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 class HttpClientFactoryBean implements FactoryBean<HttpClient> {
 
@@ -37,7 +38,7 @@ class HttpClientFactoryBean implements FactoryBean<HttpClient> {
 
     @Override
     public CloseableHttpClient getObject() {
-        // TODO: builder.setConnectionTimeToLive(30, TimeUnit.SECONDS);
+        builder.setConnectionTimeToLive(30, TimeUnit.SECONDS);
         return builder.build();
     }
 
