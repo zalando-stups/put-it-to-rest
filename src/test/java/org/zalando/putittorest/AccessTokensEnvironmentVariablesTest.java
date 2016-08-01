@@ -11,6 +11,8 @@ import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.zalando.logbook.spring.LogbookAutoConfiguration;
+import org.zalando.tracer.spring.TracerAutoConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration
@@ -20,7 +22,12 @@ public final class AccessTokensEnvironmentVariablesTest {
     public static final EnvironmentVariables ENVIRONMENT = new EnvironmentVariables();
 
     @Configuration
-    @ImportAutoConfiguration({RestClientAutoConfiguration.class, JacksonAutoConfiguration.class})
+    @ImportAutoConfiguration({
+            RestClientAutoConfiguration.class,
+            JacksonAutoConfiguration.class,
+            LogbookAutoConfiguration.class,
+            TracerAutoConfiguration.class
+    })
     public static class TestConfiguration {
 
     }

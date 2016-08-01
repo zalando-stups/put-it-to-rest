@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.zalando.logbook.spring.LogbookAutoConfiguration;
 import org.zalando.stups.tokens.AccessTokens;
+import org.zalando.tracer.spring.TracerAutoConfiguration;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -23,7 +25,12 @@ import static org.junit.Assert.assertThat;
 public final class AccessTokensImplicitDisableTest {
 
     @Configuration
-    @ImportAutoConfiguration({RestClientAutoConfiguration.class, JacksonAutoConfiguration.class})
+    @ImportAutoConfiguration({
+            RestClientAutoConfiguration.class,
+            JacksonAutoConfiguration.class,
+            LogbookAutoConfiguration.class,
+            TracerAutoConfiguration.class
+    })
     public static class TestConfiguration {
 
     }

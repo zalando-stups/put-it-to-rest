@@ -9,6 +9,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,6 +27,7 @@ public final class ObjectMapperOverrideTest {
     public static class TestConfiguration {
 
         @Bean
+        @Primary
         public ObjectMapper jacksonObjectMapper() {
             return mock(ObjectMapper.class);
         }
