@@ -130,8 +130,8 @@ All beans that are created for each client use the *Client ID*, in this case `ex
 
 Besides `Rest`, you can also alternatively inject any of the following types per client directly:
 - `AsyncClientHttpRequestFactory`
-- `HttpAsyncClient`
-- `HttpMessageConverters`
+- `HttpClient`
+- `ClientHttpMessageConverters`
 
 A global `AccessTokens` bean is also provided.
 
@@ -163,8 +163,8 @@ The following table shows all beans with their respective name (for the `example
 | Bean Name                              | Bean Type                       | Configures by default      |
 |----------------------------------------|---------------------------------|----------------------------|
 | `accessToken` (no client prefix!)      | `AccessTokens`                  | OAuth settings             |
-| `exampleHttpMessageConverters`         | `HttpMessageConverters`         | Text and JSON              |
-| `exampleHttpAsyncClient`               | `HttpAsyncClient`               | Interceptors               |
+| `exampleClientHttpMessageConverters`   | `ClientHttpMessageConverters`   | Text, JSON and JSON Stream |
+| `exampleHttpClient`                    | `HttpClient`                    | Interceptors               |
 | `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory` | Timeouts                   |
 | `exampleRest`                          | `Rest`                          | Base URL                   |
 
