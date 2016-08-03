@@ -58,6 +58,7 @@
         <riptide.version>2.0.0-RC5</riptide.version>
         <logbook.version>1.0.0-RC4</logbook.version>
         <tracer.version>0.10.0</tracer.version>
+        <zmon.version>0.9.7</zmon.version>
     </properties>
 
     <dependencyManagement>
@@ -152,6 +153,12 @@
             <groupId>org.zalando</groupId>
             <artifactId>logbook-spring-boot-starter</artifactId>
             <version>${logbook.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando.zmon</groupId>
+            <artifactId>zmon-actuator</artifactId>
+            <version>${zmon.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- testing -->
