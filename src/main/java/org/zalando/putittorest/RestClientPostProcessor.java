@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 import static org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition;
+import static org.zalando.putittorest.Registry.generateBeanName;
 import static org.zalando.putittorest.Registry.list;
 import static org.zalando.putittorest.Registry.ref;
 
@@ -164,6 +165,12 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
             final BeanDefinitionBuilder httpClient = genericBeanDefinition(HttpClientFactoryBean.class);
             configureTimeouts(httpClient, client.getTimeouts());
             configureInterceptors(httpClient, id, client.getOauth());
+
+            final String customizerId = generateBeanName(id, HttpClientCustomizer.class);
+            if (registry.isRegistered(customizerId)) {
+                httpClient.addPropertyReference("customizer", customizerId);
+            }
+
             return httpClient;
         });
     }

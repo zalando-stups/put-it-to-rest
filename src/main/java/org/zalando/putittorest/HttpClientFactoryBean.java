@@ -7,14 +7,17 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Component
 class HttpClientFactoryBean implements FactoryBean<HttpClient> {
 
     private final HttpClientBuilder builder = HttpClientBuilder.create();
     private final RequestConfig.Builder config = RequestConfig.custom();
+    private HttpClientCustomizer customizer = $ -> {};
 
     public void setFirstRequestInterceptors(final List<HttpRequestInterceptor> interceptors) {
         interceptors.forEach(builder::addInterceptorFirst);
@@ -36,9 +39,14 @@ class HttpClientFactoryBean implements FactoryBean<HttpClient> {
         config.setSocketTimeout(socketTimeout);
     }
 
+    public void setCustomizer(final HttpClientCustomizer customizer) {
+        this.customizer = customizer;
+    }
+
     @Override
     public CloseableHttpClient getObject() {
         builder.setConnectionTimeToLive(30, TimeUnit.SECONDS);
+        customizer.customize(builder);
         return builder.build();
     }
 

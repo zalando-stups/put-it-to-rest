@@ -10,13 +10,19 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.ManagedList;
 import org.zalando.putittorest.annotation.RestClient;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
+import static com.google.common.collect.Maps.immutableEntry;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 final class Registry {
 
@@ -53,13 +59,8 @@ final class Registry {
 
         final AbstractBeanDefinition definition = factory.get().getBeanDefinition();
 
-        final AutowireCandidateQualifier restClientQualifier = new AutowireCandidateQualifier(RestClient.class);
-        restClientQualifier.setAttribute("value", id);
-        definition.addQualifier(restClientQualifier);
-
-        final AutowireCandidateQualifier qualifier = new AutowireCandidateQualifier(Qualifier.class);
-        qualifier.setAttribute("value", id);
-        definition.addQualifier(qualifier);
+        definition.addQualifier(new AutowireCandidateQualifier(RestClient.class, id));
+        definition.addQualifier(new AutowireCandidateQualifier(Qualifier.class, id));
 
         registry.registerBeanDefinition(name, definition);
 
