@@ -4,6 +4,7 @@
 
 [![Build Status](https://img.shields.io/travis/zalando-incubator/put-it-to-rest.svg)](https://travis-ci.org/zalando-incubator/put-it-to-rest)
 [![Coverage Status](https://img.shields.io/coveralls/zalando-incubator/put-it-to-rest.svg)](https://coveralls.io/r/zalando-incubator/put-it-to-rest)
+[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/org.zalando/put-it-to-rest/badge.svg)](http://www.javadoc.io/doc/org.zalando/put-it-to-rest)
 [![Release](https://img.shields.io/github/release/zalando-incubator/put-it-to-rest.svg)](https://github.com/zalando-incubator/put-it-to-rest/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/put-it-to-rest-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/put-it-to-rest)
 
