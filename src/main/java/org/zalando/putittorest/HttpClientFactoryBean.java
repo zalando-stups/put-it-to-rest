@@ -45,6 +45,7 @@ class HttpClientFactoryBean implements FactoryBean<HttpClient> {
 
     @Override
     public CloseableHttpClient getObject() {
+        builder.setDefaultRequestConfig(config.build());
         builder.setConnectionTimeToLive(30, TimeUnit.SECONDS);
         customizer.customize(builder);
         return builder.build();
