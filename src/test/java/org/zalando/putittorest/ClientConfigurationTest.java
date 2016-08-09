@@ -1,5 +1,9 @@
 package org.zalando.putittorest;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.Configurable;
+import static org.hamcrest.Matchers.instanceOf;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +21,10 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(DefaultTestConfiguration.class)
 @TestPropertySource(properties = {
-        "rest.clients.example.timeouts.connect: 2",
-        "rest.clients.example.timeouts.read: 3",
+    "rest.clients.example.timeouts.connect: 12",
+    "rest.clients.example.timeouts.connect-unit: minutes",
+    "rest.clients.example.timeouts.read: 34",
+    "rest.clients.example.timeouts.read-unit: hours"
 })
 @Component
 public final class ClientConfigurationTest {
@@ -31,6 +37,10 @@ public final class ClientConfigurationTest {
     @Qualifier("ecb")
     private Rest ecbRest;
 
+    @Autowired
+    @Qualifier("example")
+    private HttpClient exampleHttpClient;
+
     @Test
     public void shouldWireOAuthCorrectly() {
         assertThat(exampleRest, is(notNullValue()));
@@ -39,7 +49,16 @@ public final class ClientConfigurationTest {
     @Test
     public void shouldWireNonOAuthCorrectly() {
         assertThat(ecbRest, is(notNullValue()));
+    }
 
+    @Test
+    public void shouldApplyTimeouts() throws Exception {
+        assertThat("Configurable http client expected", exampleHttpClient, is(instanceOf(Configurable.class)));
+
+        final RequestConfig config = ((Configurable) exampleHttpClient).getConfig();
+
+        assertThat(config.getSocketTimeout(), is(34 * 60 * 60 * 1000));
+        assertThat(config.getConnectTimeout(), is(12 * 60 * 1000));
     }
 
 }
