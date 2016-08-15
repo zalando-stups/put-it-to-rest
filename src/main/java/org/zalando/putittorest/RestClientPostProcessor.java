@@ -195,11 +195,11 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
                     .getBeanDefinition());
         }
 
-        requestInterceptors.add(ref("logbookHttpRequestInterceptor"));
         responseInterceptors.add(ref("logbookHttpResponseInterceptor"));
 
-        builder.addPropertyValue("requestInterceptors", requestInterceptors);
-        builder.addPropertyValue("responseInterceptors", responseInterceptors);
+        builder.addPropertyValue("firstRequestInterceptors", requestInterceptors);
+        builder.addPropertyValue("lastRequestInterceptors", list(ref("logbookHttpRequestInterceptor")));
+        builder.addPropertyValue("lastResponseInterceptors", responseInterceptors);
     }
 
     @Override

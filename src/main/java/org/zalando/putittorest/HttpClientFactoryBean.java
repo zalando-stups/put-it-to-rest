@@ -19,11 +19,15 @@ class HttpClientFactoryBean implements FactoryBean<HttpClient> {
     private final RequestConfig.Builder config = RequestConfig.custom();
     private HttpClientCustomizer customizer = $ -> {};
 
-    public void setRequestInterceptors(final List<HttpRequestInterceptor> interceptors) {
+    public void setFirstRequestInterceptors(final List<HttpRequestInterceptor> interceptors) {
+        interceptors.forEach(builder::addInterceptorFirst);
+    }
+
+    public void setLastRequestInterceptors(final List<HttpRequestInterceptor> interceptors) {
         interceptors.forEach(builder::addInterceptorLast);
     }
 
-    public void setResponseInterceptors(final List<HttpResponseInterceptor> interceptors) {
+    public void setLastResponseInterceptors(final List<HttpResponseInterceptor> interceptors) {
         interceptors.forEach(builder::addInterceptorLast);
     }
 
