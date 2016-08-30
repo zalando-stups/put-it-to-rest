@@ -7,6 +7,7 @@
 [![Javadoc](https://javadoc-emblem.rhcloud.com/doc/org.zalando/put-it-to-rest/badge.svg)](http://www.javadoc.io/doc/org.zalando/put-it-to-rest)
 [![Release](https://img.shields.io/github/release/zalando-incubator/put-it-to-rest.svg)](https://github.com/zalando-incubator/put-it-to-rest/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/put-it-to-rest.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/put-it-to-rest)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/zalando-incubator/put-it-to-rest/master/LICENSE)
 
 Spring Boot REST client auto configuration
 
