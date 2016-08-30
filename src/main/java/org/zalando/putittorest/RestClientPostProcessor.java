@@ -19,9 +19,8 @@ import org.springframework.http.client.AsyncClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
-import org.springframework.web.util.DefaultUriTemplateHandler;
-import org.springframework.web.util.UriTemplateHandler;
 import org.zalando.riptide.Rest;
+import org.zalando.riptide.RestBuilder;
 import org.zalando.riptide.httpclient.RestAsyncClientHttpRequestFactory;
 import org.zalando.riptide.stream.Streams;
 import org.zalando.stups.oauth2.httpcomponents.AccessTokensRequestInterceptor;
@@ -118,7 +117,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
     private String registerRest(final String id, final String factoryId, final String convertersId, @Nullable final String baseUrl) {
         return registry.register(id, Rest.class, () -> {
-            final BeanDefinitionBuilder rest = genericBeanDefinition(Rest.class);
+            final BeanDefinitionBuilder rest = genericBeanDefinition(RestFactory.class);
             rest.setFactoryMethod("create");
             rest.addConstructorArgReference(factoryId);
 
@@ -128,15 +127,9 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
             converters.setFactoryBeanName(convertersId);
             rest.addConstructorArgValue(converters);
 
-            rest.addConstructorArgValue(newUriTemplateHandler(baseUrl));
+            rest.addConstructorArgValue(baseUrl);
             return rest;
         });
-    }
-
-    private UriTemplateHandler newUriTemplateHandler(@Nullable final String baseUrl) {
-        final DefaultUriTemplateHandler handler = new DefaultUriTemplateHandler();
-        handler.setBaseUrl(baseUrl);
-        return handler;
     }
 
     private String registerAsyncClientHttpRequestFactory(final String id, final Client client) {
