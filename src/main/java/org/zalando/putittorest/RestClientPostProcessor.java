@@ -19,6 +19,8 @@ import org.springframework.http.client.AsyncClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
+import org.zalando.putittorest.zmon.ZmonRequestInterceptor;
+import org.zalando.putittorest.zmon.ZmonResponseInterceptor;
 import org.zalando.riptide.Rest;
 import org.zalando.riptide.RestBuilder;
 import org.zalando.riptide.httpclient.RestAsyncClientHttpRequestFactory;
@@ -175,6 +177,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
     private void configureInterceptors(final BeanDefinitionBuilder builder, final String id, @Nullable final OAuth oauth) {
         final List<Object> requestInterceptors = list();
+        final List<Object> responseInterceptors = list();
 
         if (oauth != null) {
             requestInterceptors.add(genericBeanDefinition(AccessTokensRequestInterceptor.class)
@@ -185,9 +188,18 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
         requestInterceptors.add(ref("tracerHttpRequestInterceptor"));
 
+        if (registry.isRegistered("zmonMetricsWrapper")) {
+            requestInterceptors.add(genericBeanDefinition(ZmonRequestInterceptor.class).getBeanDefinition());
+            responseInterceptors.add(genericBeanDefinition(ZmonResponseInterceptor.class)
+                    .addConstructorArgValue(ref("zmonMetricsWrapper"))
+                    .getBeanDefinition());
+        }
+
+        responseInterceptors.add(ref("logbookHttpResponseInterceptor"));
+
         builder.addPropertyValue("firstRequestInterceptors", requestInterceptors);
         builder.addPropertyValue("lastRequestInterceptors", list(ref("logbookHttpRequestInterceptor")));
-        builder.addPropertyValue("lastResponseInterceptors", list(ref("logbookHttpResponseInterceptor")));
+        builder.addPropertyValue("lastResponseInterceptors", responseInterceptors);
     }
 
     @Override
