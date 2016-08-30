@@ -25,4 +25,9 @@ public final class EnforceCoverageTest {
         unit.getSettings();
     }
 
+    @Test
+    public void shouldCallRestFactoryConstructor() {
+        new RestFactory();
+    }
+
 }

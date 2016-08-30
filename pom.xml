@@ -53,11 +53,11 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <slf4j.version>1.7.21</slf4j.version>
-        <spring.version>4.2.5.RELEASE</spring.version>
-        <spring-boot.version>1.3.3.RELEASE</spring-boot.version>
-        <riptide.version>2.0.0-RC3</riptide.version>
-        <logbook.version>1.0.0-RC3</logbook.version>
-        <tracer.version>0.9.0</tracer.version>
+        <spring.version>4.3.2.RELEASE</spring.version>
+        <spring-boot.version>1.4.0.RELEASE</spring-boot.version>
+        <riptide.version>2.0.0-RC5</riptide.version>
+        <logbook.version>1.0.0-RC4</logbook.version>
+        <tracer.version>0.10.0</tracer.version>
     </properties>
 
     <dependencyManagement>
@@ -201,6 +201,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -216,7 +221,7 @@
                 <version>3.1</version>
                 <configuration>
                     <compilerArgs>
-                        <compilerArg>-Xlint:unchecked</compilerArg>
+                        <compilerArg>-Xlint:unchecked,deprecation</compilerArg>
                         <compilerArg>-Werror</compilerArg>
                         <compilerArg>-parameters</compilerArg>
                     </compilerArgs>
