@@ -10,16 +10,15 @@ import java.io.IOException;
 
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.longThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.longThat;
 
 public class ZmonResponseInterceptorTest {
 
@@ -53,7 +52,8 @@ public class ZmonResponseInterceptorTest {
 
         unit.process(new BasicHttpResponse(HTTP_1_1, 200, "ok"), context);
 
-        verify(metricsWrapper).recordBackendRoundTripMetrics(anyString(), anyString(), anyInt(), longThat(is(greaterThan(0L))));
+        final Long l = 0L;
+        verify(metricsWrapper).recordBackendRoundTripMetrics(anyString(), anyString(), anyInt(), longThat(greaterThan(0L)));
     }
 
 
