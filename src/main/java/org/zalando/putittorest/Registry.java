@@ -38,7 +38,7 @@ final class Registry {
         final String name = UPPER_CAMEL.to(LOWER_CAMEL, type.getSimpleName());
 
         if (isRegistered(name)) {
-            LOG.debug("Bean [{}] is already registered, skipping it.");
+            LOG.debug("Bean [{}] is already registered, skipping it.", name);
             return name;
         }
 
@@ -53,7 +53,7 @@ final class Registry {
         final String name = generateBeanName(id, type);
 
         if (isRegistered(name)) {
-            LOG.debug("Bean [{}] is already registered, skipping it.");
+            LOG.debug("Bean [{}] is already registered, skipping it.", name);
             return name;
         }
 

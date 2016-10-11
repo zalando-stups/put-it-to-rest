@@ -104,7 +104,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
                     .addConstructorArgReference(objectMapperId)
                     .getBeanDefinition());
 
-            LOG.debug("Client [{}]: Registering Streamconverter referencing [{}]", id, objectMapperId);
+            LOG.debug("Client [{}]: Registering StreamConverter referencing [{}]", id, objectMapperId);
             list.add(genericBeanDefinition(Streams.class)
                     .setFactoryMethod("streamConverter")
                     .addConstructorArgReference(objectMapperId)
