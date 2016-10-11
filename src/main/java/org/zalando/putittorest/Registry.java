@@ -1,5 +1,7 @@
 package org.zalando.putittorest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -20,6 +22,8 @@ import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 
 final class Registry {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Registry.class);
+
     private final BeanDefinitionRegistry registry;
 
     Registry(final BeanDefinitionRegistry registry) {
@@ -34,6 +38,7 @@ final class Registry {
         final String name = UPPER_CAMEL.to(LOWER_CAMEL, type.getSimpleName());
 
         if (isRegistered(name)) {
+            LOG.debug("Bean [{}] is already registered, skipping it.");
             return name;
         }
 
@@ -48,6 +53,7 @@ final class Registry {
         final String name = generateBeanName(id, type);
 
         if (isRegistered(name)) {
+            LOG.debug("Bean [{}] is already registered, skipping it.");
             return name;
         }
 
