@@ -5,16 +5,17 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.client.AsyncClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 import static org.zalando.putittorest.Mocks.isMock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,7 +30,8 @@ public final class AsyncClientHttpRequestFactoryOverrideTest {
         @Bean
         @Qualifier("example")
         public AsyncClientHttpRequestFactory exampleAsyncClientHttpRequestFactory() {
-            return mock(AsyncClientHttpRequestFactory.class);
+            return mock(AsyncClientHttpRequestFactory.class,
+                    withSettings().extraInterfaces(ClientHttpRequestFactory.class));
         }
 
     }

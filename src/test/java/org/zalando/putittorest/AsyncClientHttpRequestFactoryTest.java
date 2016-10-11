@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.client.AsyncClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.zalando.riptide.httpclient.RestAsyncClientHttpRequestFactory;
@@ -28,7 +29,16 @@ public final class AsyncClientHttpRequestFactoryTest {
 
     @Autowired
     @Qualifier("example")
+    private ClientHttpRequestFactory sync;
+
+    @Autowired
+    @Qualifier("example")
     private AsyncClientHttpRequestFactory async;
+
+    @Test
+    public void shouldAutowireSync() {
+        assertThat(sync.getClass(), is(RestAsyncClientHttpRequestFactory.class));
+    }
 
     @Test
     public void shouldAutowireAsync() {

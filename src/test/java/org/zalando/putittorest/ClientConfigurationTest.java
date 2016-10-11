@@ -3,7 +3,6 @@ package org.zalando.putittorest;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.Configurable;
-import static org.hamcrest.Matchers.instanceOf;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.RestTemplate;
 import org.zalando.riptide.Rest;
 
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -39,11 +41,21 @@ public final class ClientConfigurationTest {
 
     @Autowired
     @Qualifier("example")
+    private RestTemplate exampleRestTemplate;
+
+    @Autowired
+    @Qualifier("example")
+    private AsyncRestTemplate exampleAsyncRestTemplate;
+
+    @Autowired
+    @Qualifier("example")
     private HttpClient exampleHttpClient;
 
     @Test
     public void shouldWireOAuthCorrectly() {
         assertThat(exampleRest, is(notNullValue()));
+        assertThat(exampleRestTemplate, is(notNullValue()));
+        assertThat(exampleAsyncRestTemplate, is(notNullValue()));
     }
 
     @Test

@@ -19,10 +19,12 @@ import org.springframework.http.client.AsyncClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
+import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriTemplateHandler;
 import org.zalando.putittorest.zmon.ZmonRequestInterceptor;
 import org.zalando.putittorest.zmon.ZmonResponseInterceptor;
 import org.zalando.riptide.Rest;
-import org.zalando.riptide.RestBuilder;
 import org.zalando.riptide.httpclient.RestAsyncClientHttpRequestFactory;
 import org.zalando.riptide.stream.Streams;
 import org.zalando.stups.oauth2.httpcomponents.AccessTokensRequestInterceptor;
@@ -51,7 +53,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
     }
 
     @Override
-    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
+    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry beanDefinitionRegistry) {
         this.registry = new Registry(beanDefinitionRegistry);
 
         getSettings().getClients().forEach((id, client) -> {
@@ -59,8 +61,11 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
             final String convertersId = registerHttpMessageConverters(id);
 
-            final String asyncFactoryId = registerAsyncClientHttpRequestFactory(id, client);
-            registerRest(id, asyncFactoryId, convertersId, baseUrl);
+            final String factoryId = registerAsyncClientHttpRequestFactory(id, client);
+
+            registerRest(id, factoryId, convertersId, baseUrl);
+            registerRestTemplate(id, factoryId, convertersId, baseUrl);
+            registerAsyncRestTemplate(id, factoryId, convertersId, baseUrl);
         });
     }
 
@@ -117,7 +122,8 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         });
     }
 
-    private String registerRest(final String id, final String factoryId, final String convertersId, @Nullable final String baseUrl) {
+    private String registerRest(final String id, final String factoryId, final String convertersId,
+            @Nullable final String baseUrl) {
         return registry.register(id, Rest.class, () -> {
             final BeanDefinitionBuilder rest = genericBeanDefinition(RestFactory.class);
             rest.setFactoryMethod("create");
@@ -131,6 +137,49 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
             rest.addConstructorArgValue(baseUrl);
             return rest;
+        });
+    }
+
+    private String registerRestTemplate(final String id, final String factoryId, final String convertersId,
+            @Nullable final String baseUrl) {
+        return registry.register(id, RestTemplate.class, () -> {
+            final BeanDefinitionBuilder restTemplate = genericBeanDefinition(RestTemplate.class);
+
+            restTemplate.addConstructorArgReference(factoryId);
+
+            final DefaultUriTemplateHandler handler = new DefaultUriTemplateHandler();
+            handler.setBaseUrl(baseUrl);
+            restTemplate.addPropertyValue("uriTemplateHandler", handler);
+
+            final AbstractBeanDefinition converters = BeanDefinitionBuilder.genericBeanDefinition()
+                    .setFactoryMethod("getConverters")
+                    .getBeanDefinition();
+            converters.setFactoryBeanName(convertersId);
+            restTemplate.addPropertyValue("messageConverters", converters);
+
+            return restTemplate;
+        });
+    }
+
+    private String registerAsyncRestTemplate(final String id, final String factoryId, final String convertersId,
+            @Nullable final String baseUrl) {
+        return registry.register(id, AsyncRestTemplate.class, () -> {
+            final BeanDefinitionBuilder restTemplate = genericBeanDefinition(AsyncRestTemplate.class);
+
+            restTemplate.addConstructorArgReference(factoryId);
+            restTemplate.addConstructorArgReference(factoryId);
+
+            final DefaultUriTemplateHandler handler = new DefaultUriTemplateHandler();
+            handler.setBaseUrl(baseUrl);
+            restTemplate.addPropertyValue("uriTemplateHandler", handler);
+
+            final AbstractBeanDefinition converters = BeanDefinitionBuilder.genericBeanDefinition()
+                    .setFactoryMethod("getConverters")
+                    .getBeanDefinition();
+            converters.setFactoryBeanName(convertersId);
+            restTemplate.addPropertyValue("messageConverters", converters);
+
+            return restTemplate;
         });
     }
 
@@ -175,7 +224,8 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         builder.addPropertyValue("socketTimeout", (int) timeouts.getReadUnit().toMillis(timeouts.getRead()));
     }
 
-    private void configureInterceptors(final BeanDefinitionBuilder builder, final String id, @Nullable final OAuth oauth) {
+    private void configureInterceptors(final BeanDefinitionBuilder builder, final String id,
+            @Nullable final OAuth oauth) {
         final List<Object> requestInterceptors = list();
         final List<Object> responseInterceptors = list();
 

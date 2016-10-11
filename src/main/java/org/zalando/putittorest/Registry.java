@@ -10,19 +10,13 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.ManagedList;
 import org.zalando.putittorest.annotation.RestClient;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
-import static com.google.common.collect.Maps.immutableEntry;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
 
 final class Registry {
 
