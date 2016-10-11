@@ -9,10 +9,14 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/put-it-to-rest.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/put-it-to-rest)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/zalando-incubator/put-it-to-rest/master/LICENSE)
 
-Spring Boot REST client auto configuration
+> **put to rest** *verb*: to finish dealing with something and forget about it
+
+*Put it to REST!* is a library that seamlessly integrates various REST- and HTTP-related client-side tools in the
+easiest and convenient way possible. It solves a recurring problem of bootstrapping and wiring different libraries
+together whenever interaction with a remote service is required. Spinning up new clients couldn't get any easier!
 
 - **Technology stack**: Spring Boot
-- **Status**:  Alpha
+- **Status**:  Beta
 
 ## Example
 
@@ -140,7 +144,7 @@ Besides `Rest`, you can also alternatively inject any of the following types per
 
 A global `AccessTokens` bean is also provided.
 
-## Customization
+### Customization
 
 For every client that is defined in your configuration the following graph of beans, indicated by the green color, will
 be created:
@@ -172,14 +176,15 @@ The following table shows all beans with their respective name (for the `example
 | `exampleHttpClient`                    | `HttpClient`                    | Interceptors               |
 | `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory` | Timeouts                   |
 | `exampleRest`                          | `Rest`                          | Base URL                   |
+| `exampleRestTemplate`                  | `RestTemplate`                  | Base URL                   |
+| `exampleAsyncRestTemplate`             | `AsyncRestTemplate`             | Base URL                   |
 
 If you override a bean then all of its dependencies (see the [graph](#customization)), will **not** be registered,
 unless required by some other bean.
 
 ## Getting Help
 
-If you have questions, concerns, bug reports, etc., please file an issue in this repository's
-[Issue Tracker](issues).
+If you have questions, concerns, bug reports, etc., please file an issue in this repository's [Issue Tracker](../../issues).
 
 ## Getting Involved/Contributing
 
