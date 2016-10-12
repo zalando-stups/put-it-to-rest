@@ -53,11 +53,11 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <slf4j.version>1.7.21</slf4j.version>
-        <spring.version>4.3.2.RELEASE</spring.version>
-        <spring-boot.version>1.4.0.RELEASE</spring-boot.version>
-        <riptide.version>2.0.0-RC5</riptide.version>
-        <logbook.version>1.0.0-RC4</logbook.version>
-        <tracer.version>0.10.0</tracer.version>
+        <spring.version>4.3.3.RELEASE</spring.version>
+        <spring-boot.version>1.4.1.RELEASE</spring-boot.version>
+        <riptide.version>2.0.0-RC8</riptide.version>
+        <logbook.version>1.0.0</logbook.version>
+        <tracer.version>0.10.1</tracer.version>
         <zmon.version>0.9.7</zmon.version>
     </properties>
 
