@@ -180,7 +180,6 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
             final BeanDefinitionBuilder restTemplate = genericBeanDefinition(AsyncRestTemplate.class);
 
             restTemplate.addConstructorArgReference(factoryId);
-            restTemplate.addConstructorArgReference(factoryId);
 
             final DefaultUriTemplateHandler handler = new DefaultUriTemplateHandler();
             handler.setBaseUrl(baseUrl);
