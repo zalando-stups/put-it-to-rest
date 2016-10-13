@@ -225,7 +225,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
             final BeanDefinitionBuilder httpClient = genericBeanDefinition(HttpClientFactoryBean.class);
             configureTimeouts(httpClient, id, client.getTimeouts());
-            configureInterceptors(httpClient, id, client.getOauth());
+            configureInterceptors(httpClient, id, client);
 
             final String customizerId = generateBeanName(id, HttpClientCustomizer.class);
             if (registry.isRegistered(customizerId)) {
@@ -242,7 +242,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         final TimeUnit connectUnit = timeouts.getConnectUnit();
         final TimeUnit readUnit = timeouts.getReadUnit();
         final int read = timeouts.getRead();
-        
+
         LOG.debug("Client [{}]: Configuring connect timeout: [{} {}]", id, connect, connectUnit);
         builder.addPropertyValue("connectTimeout", (int) connectUnit.toMillis(connect));
         LOG.debug("Client [{}]: Configuring socket timeout: [{} {}]", id, read, readUnit);
@@ -250,11 +250,11 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
     }
 
     private void configureInterceptors(final BeanDefinitionBuilder builder, final String id,
-            @Nullable final OAuth oauth) {
+            final Client client) {
         final List<Object> requestInterceptors = list();
         final List<Object> responseInterceptors = list();
 
-        if (oauth != null) {
+        if (client.getOauth() != null) {
             LOG.debug("Client [{}]: Registering AccessTokensRequestInterceptor", id);
             requestInterceptors.add(genericBeanDefinition(AccessTokensRequestInterceptor.class)
                     .addConstructorArgValue(id)
@@ -279,6 +279,11 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
         LOG.debug("Client [{}]: Registering LogbookHttpRequestInterceptor", id);
         final List<Object> lastRequestInterceptors = list(ref("logbookHttpRequestInterceptor"));
+
+        if (client.isGzipRequestEntity()) {
+            LOG.debug("Client [{}]: Registering GzippingHttpRequestInterceptor", id);
+            lastRequestInterceptors.add(new GzippingHttpRequestInterceptor());
+        }
 
         builder.addPropertyValue("firstRequestInterceptors", requestInterceptors);
         builder.addPropertyValue("lastRequestInterceptors", lastRequestInterceptors);

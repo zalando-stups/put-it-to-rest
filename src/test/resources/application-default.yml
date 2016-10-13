@@ -11,3 +11,4 @@ rest:
         - example.read
     ecb:
       base-url: http://www.ecb.europa.eu
+      gzip-request-entity: true
