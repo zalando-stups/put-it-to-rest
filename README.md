@@ -41,6 +41,7 @@ private Rest example;
   - [Tracer](https://github.com/zalando/tracer)
   - [Tokens](https://github.com/zalando-stups/tokens) (plus [interceptor](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-http-components-oauth2))
   - [Jackson 2](https://github.com/FasterXML/jackson)
+  - [HttpClient](https://hc.apache.org/httpcomponents-client-ga/index.html) (including gzipping of request body)
 - [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
 - Sensible defaults
 
@@ -101,6 +102,7 @@ rest:
         scopes:
           - uid
           - example.read
+      compress-request: true
 ```
 
 Clients are identified by a *Client ID*, for instance `example` in the sample above. You can have as many clients as you want.
@@ -122,6 +124,7 @@ For a complete overview of available properties, they type and default value ple
 | `rest.clients.<id>.timeouts.read-unit`    | `TimeUnit`     | no       | `seconds`                        |
 | `rest.clients.<id>.oauth`                 |                | no       | none, disables OAuth2 if omitted |
 | `rest.clients.<id>.oauth.scopes`          | `List<String>` | no       | none                             |
+| `rest.clients.<id>.compress-request`      | `boolean`      | no       | `false`                          |
 
 ## Usage
 

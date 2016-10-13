@@ -7,6 +7,7 @@ public final class Client {
     private String baseUrl;
     private OAuth oauth;
     private final Timeouts timeouts = new Timeouts(5, 5);
+    private boolean compressRequest = false;
 
     @Nullable
     public String getBaseUrl() {
@@ -30,4 +31,11 @@ public final class Client {
         return timeouts;
     }
 
+    public boolean isCompressRequest() {
+        return compressRequest;
+    }
+
+    public void setCompressRequest(final boolean compressRequest) {
+        this.compressRequest = compressRequest;
+    }
 }
