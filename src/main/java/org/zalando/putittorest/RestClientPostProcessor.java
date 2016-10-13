@@ -280,7 +280,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         LOG.debug("Client [{}]: Registering LogbookHttpRequestInterceptor", id);
         final List<Object> lastRequestInterceptors = list(ref("logbookHttpRequestInterceptor"));
 
-        if (client.isGzipRequestEntity()) {
+        if (client.isCompressRequest()) {
             LOG.debug("Client [{}]: Registering GzippingHttpRequestInterceptor", id);
             lastRequestInterceptors.add(new GzippingHttpRequestInterceptor());
         }

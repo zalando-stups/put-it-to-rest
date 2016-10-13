@@ -102,7 +102,7 @@ rest:
         scopes:
           - uid
           - example.read
-      gzip-request-entity: true
+      compress-request: true
 ```
 
 Clients are identified by a *Client ID*, for instance `example` in the sample above. You can have as many clients as you want.
@@ -124,7 +124,7 @@ For a complete overview of available properties, they type and default value ple
 | `rest.clients.<id>.timeouts.read-unit`    | `TimeUnit`     | no       | `seconds`                        |
 | `rest.clients.<id>.oauth`                 |                | no       | none, disables OAuth2 if omitted |
 | `rest.clients.<id>.oauth.scopes`          | `List<String>` | no       | none                             |
-| `rest.clients.<id>.gzip-request-entity`   | `boolean`      | no       | `false`                          |
+| `rest.clients.<id>.compress-request`      | `boolean`      | no       | `false`                          |
 
 ## Usage
 
