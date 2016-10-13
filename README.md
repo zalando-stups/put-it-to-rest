@@ -41,7 +41,9 @@ private Rest example;
   - [Tracer](https://github.com/zalando/tracer)
   - [Tokens](https://github.com/zalando-stups/tokens) (plus [interceptor](https://github.com/zalando-stups/stups-spring-oauth2-support/tree/master/stups-http-components-oauth2))
   - [Jackson 2](https://github.com/FasterXML/jackson)
-  - [HttpClient](https://hc.apache.org/httpcomponents-client-ga/index.html) (including gzipping of request body)
+  - [HttpClient](https://hc.apache.org/httpcomponents-client-ga/index.html)
+       - optional gzipping of request body
+       - optional pinning of a trusted keystore
 - [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
 - Sensible defaults
 
@@ -103,6 +105,11 @@ rest:
           - uid
           - example.read
       compress-request: true
+      trusted:
+        base-url: https://my.trusted.com
+        keystore:
+          path: trusted.keystore
+          password: passphrase
 ```
 
 Clients are identified by a *Client ID*, for instance `example` in the sample above. You can have as many clients as you want.
@@ -125,6 +132,8 @@ For a complete overview of available properties, they type and default value ple
 | `rest.clients.<id>.oauth`                 |                | no       | none, disables OAuth2 if omitted |
 | `rest.clients.<id>.oauth.scopes`          | `List<String>` | no       | none                             |
 | `rest.clients.<id>.compress-request`      | `boolean`      | no       | `false`                          |
+| `rest.clients.<id>.keystore.path`         | `String`       | no       | none                             |
+| `rest.clients.<id>.keystore.password`     | `String`       | no       | none                             |
 
 ## Usage
 
@@ -146,6 +155,18 @@ Besides `Rest`, you can also alternatively inject any of the following types per
 - `ClientHttpMessageConverters`
 
 A global `AccessTokens` bean is also provided.
+
+### Trusted Keystore
+
+A client can be configured to only connect to trusted hosts (see 
+[Certificate Pinning](https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning)) by configuring the `keystore` key. Use 
+`keystore.path` to refer to a *JKS*  keystore on the classpath/filesystem and (optionally) specify the passphrase via `keystore.password`.
+
+You can generate a keystore using the [JDK's keytool](http://docs.oracle.com/javase/7/docs/technotes/tools/#security):
+
+```bash
+./keytool -importcert -file some-cert.crt -keystore my.keystore -alias "<some-alias>"
+```
 
 ### Customization
 
