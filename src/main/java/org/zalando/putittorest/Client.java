@@ -8,6 +8,7 @@ public final class Client {
     private OAuth oauth;
     private final Timeouts timeouts = new Timeouts(5, 5);
     private boolean compressRequest = false;
+    private Keystore keystore;
 
     @Nullable
     public String getBaseUrl() {
@@ -37,5 +38,13 @@ public final class Client {
 
     public void setCompressRequest(final boolean compressRequest) {
         this.compressRequest = compressRequest;
+    }
+
+    public Keystore getKeystore() {
+        return keystore;
+    }
+
+    public void setKeystore(final Keystore keystore) {
+        this.keystore = keystore;
     }
 }

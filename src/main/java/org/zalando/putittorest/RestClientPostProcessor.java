@@ -225,6 +225,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
             final BeanDefinitionBuilder httpClient = genericBeanDefinition(HttpClientFactoryBean.class);
             configureTimeouts(httpClient, id, client.getTimeouts());
             configureInterceptors(httpClient, id, client);
+            configureKeystore(httpClient, id, client.getKeystore());
 
             final String customizerId = generateBeanName(id, HttpClientCustomizer.class);
             if (registry.isRegistered(customizerId)) {
@@ -287,6 +288,13 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         builder.addPropertyValue("firstRequestInterceptors", requestInterceptors);
         builder.addPropertyValue("lastRequestInterceptors", lastRequestInterceptors);
         builder.addPropertyValue("lastResponseInterceptors", responseInterceptors);
+    }
+
+    private void configureKeystore(final BeanDefinitionBuilder httpClient, final String id, @Nullable final Keystore keystore) {
+        if (keystore != null) {
+            LOG.debug("Client [{}]: Registering trusted keystore", id);
+            httpClient.addPropertyValue("trustedKeystore", keystore);
+        }
     }
 
     @Override

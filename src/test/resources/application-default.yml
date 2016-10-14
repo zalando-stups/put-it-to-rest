@@ -12,3 +12,12 @@ rest:
     ecb:
       base-url: http://www.ecb.europa.eu
       compress-request: true
+    github:
+      base-url: https://github.com
+      keystore:
+        path: github.keystore
+        password: password
+    github-invalid:
+      base-url: https://github.com
+      keystore:
+        path: github.keystore
