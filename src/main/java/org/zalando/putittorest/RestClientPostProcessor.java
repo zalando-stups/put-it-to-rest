@@ -250,10 +250,16 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
                 firstNonNull(client.getSocketTimeout(), defaults.getSocketTimeout()));
         configure(builder, id, "connectionTimeToLive",
                 firstNonNull(client.getConnectionTimeToLive(), defaults.getConnectionTimeToLive()));
-        configure(builder, id, "maxConnectionsPerRoute",
-                firstNonNull(client.getMaxConnectionsPerRoute(), defaults.getMaxConnectionsPerRoute()));
-        configure(builder, id, "maxConnectionsTotal",
+
+        final int maxConnectionsPerRoute =
+                firstNonNull(client.getMaxConnectionsPerRoute(), defaults.getMaxConnectionsPerRoute());
+        configure(builder, id, "maxConnectionsPerRoute", maxConnectionsPerRoute);
+
+        final int maxConnectionsTotal = Math.max(
+                maxConnectionsPerRoute,
                 firstNonNull(client.getMaxConnectionsTotal(), defaults.getMaxConnectionsTotal()));
+
+        configure(builder, id, "maxConnectionsTotal", maxConnectionsTotal);
     }
 
     private void configure(final BeanDefinitionBuilder bean, final String id, final String name, final Object value) {

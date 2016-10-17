@@ -116,29 +116,29 @@ Clients are identified by a *Client ID*, for instance `example` in the sample ab
 
 For a complete overview of available properties, they type and default value please refer to the following table:
 
-| Configuration                                 | Type           | Required | Default                          |
-|-----------------------------------------------|----------------|----------|----------------------------------|
-| `rest.defaults.connection-timeout`            | `TimeSpan`     | no       | `5 seconds`                      |
-| `rest.defaults.socket-timeout`                | `TimeSpan`     | no       | `5 seconds`                      |
-| `rest.defaults.connection-time-to-live`       | `TimeSpan`     | no       | `30 seconds`                     |
-| `rest.defaults.max-connections-per-route`     | `int`          | no       | `2`                              |
-| `rest.defaults.max-connections-total`         | `int`          | no       | `4`, or same as *per route*      |
-| `rest.oauth.access-token-url`                 | `URI`          | no       | env var `ACCESS_TOKEN_URL`       |   
-| `rest.oauth.scheduling-period`                | `TimeSpan`     | no       | `5 seconds`                      |
-| `rest.oauth.connetion-timeout`                | `TimeSpan`     | no       | `1 second`                       |
-| `rest.oauth.socket-timeout`                   | `TimeSpan`     | no       | `2 seconds`                      |
-| `rest.oauth.connection-time-to-live`          | `TimeSpan`     | no       | `30 seconds`                     |
-| `rest.clients.<id>.base-url`                  | `URI`          | no       | none                             |
-| `rest.clients.<id>.connection-timeout`        | `TimeSpan`     | no       | `5 seconds`                      |
-| `rest.clients.<id>.socket-timeout`            | `TimeSpan`     | no       | `5 seconds`                      |
-| `rest.clients.<id>.connection-time-to-live`   | `TimeSpan`     | no       | `30 seconds`                     |
-| `rest.clients.<id>.max-connections-per-route` | `int`          | no       | `2`                              |
-| `rest.clients.<id>.max-connections-total`     | `int`          | no       | `4`, or same as *per route*      |
-| `rest.clients.<id>.oauth`                     |                | no       | none, disables OAuth2 if omitted |
-| `rest.clients.<id>.oauth.scopes`              | `List<String>` | no       | none                             |
-| `rest.clients.<id>.compress-request`          | `boolean`      | no       | `false`                          |
-| `rest.clients.<id>.keystore.path`             | `String`       | no       | none                             |
-| `rest.clients.<id>.keystore.password`         | `String`       | no       | none                             |
+| Configuration                                 | Type           | Required | Default                                       |
+|-----------------------------------------------|----------------|----------|-----------------------------------------------|
+| `rest.defaults.connection-timeout`            | `TimeSpan`     | no       | `5 seconds`                                   |
+| `rest.defaults.socket-timeout`                | `TimeSpan`     | no       | `5 seconds`                                   |
+| `rest.defaults.connection-time-to-live`       | `TimeSpan`     | no       | `30 seconds`                                  |
+| `rest.defaults.max-connections-per-route`     | `int`          | no       | `2`                                           |
+| `rest.defaults.max-connections-total`         | `int`          | no       | maximum of `4` and *per route*                |
+| `rest.oauth.access-token-url`                 | `URI`          | no       | env var `ACCESS_TOKEN_URL`                    |   
+| `rest.oauth.scheduling-period`                | `TimeSpan`     | no       | `5 seconds`                                   |
+| `rest.oauth.connetion-timeout`                | `TimeSpan`     | no       | `1 second`                                    |
+| `rest.oauth.socket-timeout`                   | `TimeSpan`     | no       | `2 seconds`                                   |
+| `rest.oauth.connection-time-to-live`          | `TimeSpan`     | no       | see `rest.defaults.connection-time-to-live`   |
+| `rest.clients.<id>.base-url`                  | `URI`          | no       | none                                          |
+| `rest.clients.<id>.connection-timeout`        | `TimeSpan`     | no       | see `rest.defaults.connection-timeout`        |
+| `rest.clients.<id>.socket-timeout`            | `TimeSpan`     | no       | see `rest.defaults.socket-timeout`            |
+| `rest.clients.<id>.connection-time-to-live`   | `TimeSpan`     | no       | see `rest.defaults.connection-time-to-live`   |
+| `rest.clients.<id>.max-connections-per-route` | `int`          | no       | see `rest.defaults.max-connections-per-route` |
+| `rest.clients.<id>.max-connections-total`     | `int`          | no       | see `rest.defaults.max-connections-total    ` |
+| `rest.clients.<id>.oauth`                     |                | no       | none, disables OAuth2 if omitted              |
+| `rest.clients.<id>.oauth.scopes`              | `List<String>` | no       | none                                          |
+| `rest.clients.<id>.compress-request`          | `boolean`      | no       | `false`                                       |
+| `rest.clients.<id>.keystore.path`             | `String`       | no       | none                                          |
+| `rest.clients.<id>.keystore.password`         | `String`       | no       | none                                          |
 
 ## Usage
 

@@ -30,8 +30,8 @@ public final class RestSettings {
     public static final class GlobalOAuth {
         private URI accessTokenUrl;
         private TimeSpan schedulingPeriod = TimeSpan.of(5, SECONDS);
-        private TimeSpan connectionTimeout;
-        private TimeSpan socketTimeout;
+        private TimeSpan connectionTimeout = TimeSpan.of(1, SECONDS);
+        private TimeSpan socketTimeout = TimeSpan.of(2, SECONDS);
         private TimeSpan connectionTimeToLive;
     }
 
