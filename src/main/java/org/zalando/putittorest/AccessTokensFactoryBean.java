@@ -1,5 +1,6 @@
 package org.zalando.putittorest;
 
+import com.google.common.base.MoreObjects;
 import org.springframework.beans.factory.FactoryBean;
 import org.zalando.stups.tokens.AccessTokens;
 import org.zalando.stups.tokens.AccessTokensBuilder;
@@ -7,7 +8,9 @@ import org.zalando.stups.tokens.Tokens;
 
 import javax.annotation.Nullable;
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.base.Preconditions.checkArgument;
 
 class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
@@ -15,18 +18,21 @@ class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
     private AccessTokensBuilder builder;
 
     public void setSettings(final RestSettings settings) {
-        final GlobalOAuth oAuth = settings.getOauth();
-        final Timeouts timeouts = oAuth.getTimeouts();
+        final RestSettings.Defaults defaults = settings.getDefaults();
+        final RestSettings.GlobalOAuth oAuth = settings.getOauth();
         final URI accessTokenUrl = getAccessTokenUrl(oAuth);
 
+        final TimeSpan connectionTimeout = firstNonNull(oAuth.getConnectionTimeout(), defaults.getConnectionTimeout());
+        final TimeSpan socketTimeout = firstNonNull(oAuth.getSocketTimeout(), defaults.getSocketTimeout());
+
         this.builder = Tokens.createAccessTokensWithUri(accessTokenUrl)
-                .schedulingPeriod(oAuth.getSchedulingPeriod())
-                .connectTimeout((int) timeouts.getConnectUnit().toMillis(timeouts.getConnect()))
-                .socketTimeout((int) timeouts.getReadUnit().toMillis(timeouts.getRead()));
-        // TODO custom HttpProvider with interceptors
+                .schedulingPeriod((int) oAuth.getSchedulingPeriod().getAmount())
+                .schedulingTimeUnit(oAuth.getSchedulingPeriod().getUnit())
+                .connectTimeout((int) connectionTimeout.to(TimeUnit.MILLISECONDS))
+                .socketTimeout((int) socketTimeout.to(TimeUnit.MILLISECONDS));
 
         settings.getClients().forEach((id, client) -> {
-            @Nullable final OAuth clientOAuth = client.getOauth();
+            @Nullable final RestSettings.OAuth clientOAuth = client.getOauth();
 
             if (clientOAuth == null) {
                 return;
@@ -38,7 +44,7 @@ class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
         });
     }
 
-    private URI getAccessTokenUrl(final GlobalOAuth oauth) {
+    private URI getAccessTokenUrl(final RestSettings.GlobalOAuth oauth) {
         @Nullable final URI accessTokenUrl = oauth.getAccessTokenUrl();
 
         if (accessTokenUrl == null) {

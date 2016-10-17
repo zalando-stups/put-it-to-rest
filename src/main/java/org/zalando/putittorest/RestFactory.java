@@ -8,8 +8,9 @@ import java.util.List;
 
 final class RestFactory {
 
-    public static Rest create(final AsyncClientHttpRequestFactory requestFactory, final List<HttpMessageConverter<?>> converters,
-            final String baseUrl) {
+    @SuppressWarnings("unused")
+    public static Rest create(final AsyncClientHttpRequestFactory requestFactory,
+            final List<HttpMessageConverter<?>> converters, final String baseUrl) {
         return Rest.builder()
                 .requestFactory(requestFactory)
                 .converters(converters)

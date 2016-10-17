@@ -24,6 +24,8 @@ import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
+import org.zalando.putittorest.RestSettings.Client;
+import org.zalando.putittorest.RestSettings.Defaults;
 import org.zalando.putittorest.zmon.ZmonRequestInterceptor;
 import org.zalando.putittorest.zmon.ZmonResponseInterceptor;
 import org.zalando.riptide.Rest;
@@ -36,8 +38,8 @@ import org.zalando.tracer.concurrent.TracingExecutors;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
 import static org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition;
 import static org.zalando.putittorest.Registry.generateBeanName;
 import static org.zalando.putittorest.Registry.list;
@@ -53,7 +55,6 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
     @Override
     public void setEnvironment(final Environment environment) {
-        // TODO under which circumstances can this be something else?
         this.environment = (ConfigurableEnvironment) environment;
     }
 
@@ -61,8 +62,11 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
     public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry beanDefinitionRegistry) {
         this.registry = new Registry(beanDefinitionRegistry);
 
-        getSettings().getClients().forEach((id, client) -> {
-            final String factoryId = registerAsyncClientHttpRequestFactory(id, client);
+        final RestSettings settings = getSettings();
+        final Defaults defaults = settings.getDefaults();
+
+        settings.getClients().forEach((id, client) -> {
+            final String factoryId = registerAsyncClientHttpRequestFactory(id, defaults, client);
             final String convertersId = registerHttpMessageConverters(id);
             final String baseUrl = client.getBaseUrl();
 
@@ -195,14 +199,15 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         });
     }
 
-    private String registerAsyncClientHttpRequestFactory(final String id, final Client client) {
+    private String registerAsyncClientHttpRequestFactory(final String id, final Defaults defaults,
+            final Client client) {
         return registry.register(id, AsyncClientHttpRequestFactory.class, () -> {
             LOG.debug("Client [{}]: Registering RestAsyncClientHttpRequestFactory", id);
 
             final BeanDefinitionBuilder factory =
                     genericBeanDefinition(RestAsyncClientHttpRequestFactory.class);
 
-            factory.addConstructorArgReference(registerHttpClient(id, client));
+            factory.addConstructorArgReference(registerHttpClient(id, defaults, client));
             factory.addConstructorArgValue(genericBeanDefinition(ConcurrentTaskExecutor.class)
                     .addConstructorArgValue(BeanDefinitionBuilder.genericBeanDefinition(TracingExecutors.class)
                             .setFactoryMethod("preserve")
@@ -218,12 +223,12 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         });
     }
 
-    private String registerHttpClient(final String id, final Client client) {
+    private String registerHttpClient(final String id, final Defaults defaults, final Client client) {
         return registry.register(id, HttpClient.class, () -> {
             LOG.debug("Client [{}]: Registering HttpClient", id);
 
             final BeanDefinitionBuilder httpClient = genericBeanDefinition(HttpClientFactoryBean.class);
-            configureTimeouts(httpClient, id, client.getTimeouts());
+            configure(httpClient, id, defaults, client);
             configureInterceptors(httpClient, id, client);
             configureKeystore(httpClient, id, client.getKeystore());
 
@@ -237,16 +242,23 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         });
     }
 
-    private void configureTimeouts(final BeanDefinitionBuilder builder, final String id, final Timeouts timeouts) {
-        final int connect = timeouts.getConnect();
-        final TimeUnit connectUnit = timeouts.getConnectUnit();
-        final TimeUnit readUnit = timeouts.getReadUnit();
-        final int read = timeouts.getRead();
+    private void configure(final BeanDefinitionBuilder builder, final String id, final Defaults defaults,
+            final Client client) {
+        configure(builder, id, "connectionTimeout",
+                firstNonNull(client.getConnectionTimeout(), defaults.getConnectionTimeout()));
+        configure(builder, id, "socketTimeout",
+                firstNonNull(client.getSocketTimeout(), defaults.getSocketTimeout()));
+        configure(builder, id, "connectionTimeToLive",
+                firstNonNull(client.getConnectionTimeToLive(), defaults.getConnectionTimeToLive()));
+        configure(builder, id, "maxConnectionsPerRoute",
+                firstNonNull(client.getMaxConnectionsPerRoute(), defaults.getMaxConnectionsPerRoute()));
+        configure(builder, id, "maxConnectionsTotal",
+                firstNonNull(client.getMaxConnectionsTotal(), defaults.getMaxConnectionsTotal()));
+    }
 
-        LOG.debug("Client [{}]: Configuring connect timeout: [{} {}]", id, connect, connectUnit);
-        builder.addPropertyValue("connectTimeout", (int) connectUnit.toMillis(connect));
-        LOG.debug("Client [{}]: Configuring socket timeout: [{} {}]", id, read, readUnit);
-        builder.addPropertyValue("socketTimeout", (int) readUnit.toMillis(read));
+    private void configure(final BeanDefinitionBuilder bean, final String id, final String name, final Object value) {
+        LOG.debug("Client [{}]: Configuring {}: [{}]", id, name, value);
+        bean.addPropertyValue(name, value);
     }
 
     private void configureInterceptors(final BeanDefinitionBuilder builder, final String id,
@@ -290,7 +302,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         builder.addPropertyValue("lastResponseInterceptors", responseInterceptors);
     }
 
-    private void configureKeystore(final BeanDefinitionBuilder httpClient, final String id, @Nullable final Keystore keystore) {
+    private void configureKeystore(final BeanDefinitionBuilder httpClient, final String id, @Nullable final RestSettings.Keystore keystore) {
         if (keystore != null) {
             LOG.debug("Client [{}]: Registering trusted keystore", id);
             httpClient.addPropertyValue("trustedKeystore", keystore);
