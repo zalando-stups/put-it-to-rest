@@ -122,7 +122,7 @@ For a complete overview of available properties, they type and default value ple
 | `rest.defaults.socket-timeout`                | `TimeSpan`     | no       | `5 seconds`                                   |
 | `rest.defaults.connection-time-to-live`       | `TimeSpan`     | no       | `30 seconds`                                  |
 | `rest.defaults.max-connections-per-route`     | `int`          | no       | `2`                                           |
-| `rest.defaults.max-connections-total`         | `int`          | no       | maximum of `4` and *per route*                |
+| `rest.defaults.max-connections-total`         | `int`          | no       | maximum of `20` and *per route*               |
 | `rest.oauth.access-token-url`                 | `URI`          | no       | env var `ACCESS_TOKEN_URL`                    |   
 | `rest.oauth.scheduling-period`                | `TimeSpan`     | no       | `5 seconds`                                   |
 | `rest.oauth.connetion-timeout`                | `TimeSpan`     | no       | `1 second`                                    |

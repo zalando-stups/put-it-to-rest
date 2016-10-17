@@ -23,7 +23,7 @@ public final class RestSettings {
         private TimeSpan socketTimeout = TimeSpan.of(5, SECONDS);
         private TimeSpan connectionTimeToLive = TimeSpan.of(30, SECONDS);
         private int maxConnectionsPerRoute = 2;
-        private int maxConnectionsTotal = 4;
+        private int maxConnectionsTotal = 20;
     }
 
     @Data
