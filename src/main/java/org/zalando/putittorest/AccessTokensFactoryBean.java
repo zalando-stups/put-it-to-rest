@@ -2,6 +2,8 @@ package org.zalando.putittorest;
 
 import com.google.common.base.MoreObjects;
 import org.springframework.beans.factory.FactoryBean;
+import org.zalando.putittorest.RestSettings.Defaults;
+import org.zalando.putittorest.RestSettings.GlobalOAuth;
 import org.zalando.stups.tokens.AccessTokens;
 import org.zalando.stups.tokens.AccessTokensBuilder;
 import org.zalando.stups.tokens.Tokens;
@@ -18,8 +20,8 @@ class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
     private AccessTokensBuilder builder;
 
     public void setSettings(final RestSettings settings) {
-        final RestSettings.Defaults defaults = settings.getDefaults();
-        final RestSettings.GlobalOAuth oAuth = settings.getOauth();
+        final Defaults defaults = settings.getDefaults();
+        final GlobalOAuth oAuth = settings.getOauth();
         final URI accessTokenUrl = getAccessTokenUrl(oAuth);
 
         final TimeSpan connectionTimeout = firstNonNull(oAuth.getConnectionTimeout(), defaults.getConnectionTimeout());
@@ -44,7 +46,7 @@ class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
         });
     }
 
-    private URI getAccessTokenUrl(final RestSettings.GlobalOAuth oauth) {
+    private URI getAccessTokenUrl(final GlobalOAuth oauth) {
         @Nullable final URI accessTokenUrl = oauth.getAccessTokenUrl();
 
         if (accessTokenUrl == null) {

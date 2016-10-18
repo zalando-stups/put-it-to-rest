@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -48,6 +49,11 @@ public final class TimeSpanTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailOnUnknownTimeUnit() {
         TimeSpan.valueOf("1 decade");
+    }
+
+    @Test
+    public void shouldRenderToString() {
+        assertThat(TimeSpan.valueOf("17 seconds"), hasToString("17 seconds"));
     }
 
 }

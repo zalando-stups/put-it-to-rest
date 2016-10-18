@@ -1,6 +1,7 @@
 package org.zalando.putittorest;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -10,14 +11,16 @@ import java.util.Map;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-@Data
+@Getter
+@Setter
 public final class RestSettings {
 
     private final Defaults defaults = new Defaults();
     private final GlobalOAuth oauth = new GlobalOAuth();
     private final Map<String, Client> clients = new LinkedHashMap<>();
 
-    @Data
+    @Getter
+    @Setter
     public static final class Defaults {
         private TimeSpan connectionTimeout = TimeSpan.of(5, SECONDS);
         private TimeSpan socketTimeout = TimeSpan.of(5, SECONDS);
@@ -26,16 +29,17 @@ public final class RestSettings {
         private int maxConnectionsTotal = 20;
     }
 
-    @Data
+    @Getter
+    @Setter
     public static final class GlobalOAuth {
         private URI accessTokenUrl;
         private TimeSpan schedulingPeriod = TimeSpan.of(5, SECONDS);
         private TimeSpan connectionTimeout = TimeSpan.of(1, SECONDS);
         private TimeSpan socketTimeout = TimeSpan.of(2, SECONDS);
-        private TimeSpan connectionTimeToLive;
     }
 
-    @Data
+    @Getter
+    @Setter
     public static final class Client {
         private String baseUrl;
         private TimeSpan connectionTimeout;
@@ -48,12 +52,14 @@ public final class RestSettings {
         private Keystore keystore;
     }
 
-    @Data
+    @Getter
+    @Setter
     public static final class OAuth {
         private final List<String> scopes = new ArrayList<>();
     }
 
-    @Data
+    @Getter
+    @Setter
     public static final class Keystore {
         private String path;
         private String password;
