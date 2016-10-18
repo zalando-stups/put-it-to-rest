@@ -84,56 +84,61 @@ You can now define new REST clients and override default configuration in your `
 
 ```yaml
 rest:
+  defaults:
+    connection-timeout: 1 seconds
+    socket-timeout: 2 seconds
+    connection-time-to-live: 30 seconds
+    max-connections-per-route: 16
+    max-connections-total: 16
   oauth:
     access-token-url: https://auth.example.com
-    scheduling-period: 10
-    timeouts:
-      connect: 1000
-      connect-unit: milliseconds
-      read: 1500
-      read-unit: milliseconds
+    scheduling-period: 10 seconds
+    connection-timeout: 1 second
+    socket-timeout: 1500 milliseconds
   clients:
     example:
       base-url: https://example.com
-      timeouts:
-        connect: 2
-        connect-unit: seconds
-        read: 3
-        read-unit: seconds
+      connection-timeout: 2 seconds
+      socket-timeout: 3 seconds
       oauth:
         scopes:
           - uid
           - example.read
       compress-request: true
-      trusted:
-        base-url: https://my.trusted.com
-        keystore:
-          path: trusted.keystore
-          password: passphrase
+    trusted:
+      base-url: https://my.trusted.com
+      keystore:
+        path: trusted.keystore
+        password: passphrase
 ```
 
 Clients are identified by a *Client ID*, for instance `example` in the sample above. You can have as many clients as you want.
 
 For a complete overview of available properties, they type and default value please refer to the following table:
 
-| Configuration                             | Type           | Required | Default                          |
-|-------------------------------------------|----------------|----------|----------------------------------|
-| `rest.oauth.access-token-url`             | `URI`          | no       | env var `ACCESS_TOKEN_URL`       |   
-| `rest.oauth.scheduling-period`            | `int`          | no       | `5`                              |
-| `rest.oauth.timeouts.connect`             | `int`          | no       | `1`                              |
-| `rest.oauth.timeouts.connect-unit`        | `TimeUnit`     | no       | `seconds`                        |
-| `rest.oauth.timeouts.read`                | `int`          | no       | `2`                              |
-| `rest.oauth.timeouts.read-unit`           | `TimeUnit`     | no       | `seconds`                        |
-| `rest.clients.<id>.base-url`              | `URI`          | no       | none                             |
-| `rest.clients.<id>.timeouts.connect`      | `int`          | no       | `5`                              |
-| `rest.clients.<id>.timeouts.connect-unit` | `TimeUnit`     | no       | `seconds`                        |
-| `rest.clients.<id>.timeouts.read`         | `int`          | no       | `5`                              |
-| `rest.clients.<id>.timeouts.read-unit`    | `TimeUnit`     | no       | `seconds`                        |
-| `rest.clients.<id>.oauth`                 |                | no       | none, disables OAuth2 if omitted |
-| `rest.clients.<id>.oauth.scopes`          | `List<String>` | no       | none                             |
-| `rest.clients.<id>.compress-request`      | `boolean`      | no       | `false`                          |
-| `rest.clients.<id>.keystore.path`         | `String`       | no       | none                             |
-| `rest.clients.<id>.keystore.password`     | `String`       | no       | none                             |
+| Configuration                                 | Type           | Required | Default                                       |
+|-----------------------------------------------|----------------|----------|-----------------------------------------------|
+| `rest.defaults.connection-timeout`            | `TimeSpan`     | no       | `5 seconds`                                   |
+| `rest.defaults.socket-timeout`                | `TimeSpan`     | no       | `5 seconds`                                   |
+| `rest.defaults.connection-time-to-live`       | `TimeSpan`     | no       | `30 seconds`                                  |
+| `rest.defaults.max-connections-per-route`     | `int`          | no       | `2`                                           |
+| `rest.defaults.max-connections-total`         | `int`          | no       | maximum of `20` and *per route*               |
+| `rest.oauth.access-token-url`                 | `URI`          | no       | env var `ACCESS_TOKEN_URL`                    |   
+| `rest.oauth.scheduling-period`                | `TimeSpan`     | no       | `5 seconds`                                   |
+| `rest.oauth.connetion-timeout`                | `TimeSpan`     | no       | `1 second`                                    |
+| `rest.oauth.socket-timeout`                   | `TimeSpan`     | no       | `2 seconds`                                   |
+| `rest.oauth.connection-time-to-live`          | `TimeSpan`     | no       | see `rest.defaults.connection-time-to-live`   |
+| `rest.clients.<id>.base-url`                  | `URI`          | no       | none                                          |
+| `rest.clients.<id>.connection-timeout`        | `TimeSpan`     | no       | see `rest.defaults.connection-timeout`        |
+| `rest.clients.<id>.socket-timeout`            | `TimeSpan`     | no       | see `rest.defaults.socket-timeout`            |
+| `rest.clients.<id>.connection-time-to-live`   | `TimeSpan`     | no       | see `rest.defaults.connection-time-to-live`   |
+| `rest.clients.<id>.max-connections-per-route` | `int`          | no       | see `rest.defaults.max-connections-per-route` |
+| `rest.clients.<id>.max-connections-total`     | `int`          | no       | see `rest.defaults.max-connections-total    ` |
+| `rest.clients.<id>.oauth`                     |                | no       | none, disables OAuth2 if omitted              |
+| `rest.clients.<id>.oauth.scopes`              | `List<String>` | no       | none                                          |
+| `rest.clients.<id>.compress-request`          | `boolean`      | no       | `false`                                       |
+| `rest.clients.<id>.keystore.path`             | `String`       | no       | none                                          |
+| `rest.clients.<id>.keystore.password`         | `String`       | no       | none                                          |
 
 ## Usage
 

@@ -27,7 +27,7 @@ public final class HttpAsyncClientOverrideTest {
 
         @Bean
         @Qualifier("example")
-        public HttpClient exampleHttpClient() { // TODO document
+        public HttpClient exampleHttpClient() {
             return mock(HttpClient.class);
         }
 

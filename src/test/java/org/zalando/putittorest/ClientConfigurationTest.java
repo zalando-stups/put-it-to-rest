@@ -23,10 +23,16 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = DefaultTestConfiguration.class)
 @TestPropertySource(properties = {
-    "rest.clients.example.timeouts.connect: 12",
-    "rest.clients.example.timeouts.connect-unit: minutes",
-    "rest.clients.example.timeouts.read: 34",
-    "rest.clients.example.timeouts.read-unit: hours"
+    "rest.defaults.connection-timeout: 1 second",
+    "rest.defaults.socket-timeout: 2 seconds",
+    "rest.defaults.connection-time-to-live: 1 minute",
+    "rest.defaults.max-connections-per-route: 12",
+    "rest.defaults.max-connections-total: 12",
+    "rest.clients.example.connection-timeout: 12 minutes",
+    "rest.clients.example.socket-timeout: 34 hours",
+    "rest.clients.example.connection-time-to-live: 1 day",
+    "rest.clients.example.max-connections-per-route: 24",
+    "rest.clients.example.max-connections-total: 24",
 })
 @Component
 public final class ClientConfigurationTest {

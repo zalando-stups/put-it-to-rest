@@ -44,30 +44,43 @@ class HttpClientFactoryBean implements FactoryBean<HttpClient> {
         interceptors.forEach(builder::addInterceptorLast);
     }
 
-    public void setConnectTimeout(final int connectTimeout) {
-        config.setConnectTimeout(connectTimeout);
+    public void setConnectionTimeout(final TimeSpan connectTimeout) {
+        config.setConnectTimeout((int) connectTimeout.to(TimeUnit.MILLISECONDS));
     }
 
-    public void setSocketTimeout(final int socketTimeout) {
-        config.setSocketTimeout(socketTimeout);
+    public void setSocketTimeout(final TimeSpan socketTimeout) {
+        config.setSocketTimeout((int) socketTimeout.to(TimeUnit.MILLISECONDS));
     }
 
-    public void setTrustedKeystore(final Keystore keystore) throws Exception {
-        final SSLContextBuilder contextBuilder = SSLContexts.custom();
+    public void setConnectionTimeToLive(final TimeSpan timeToLive) {
+        builder.setConnectionTimeToLive(timeToLive.getAmount(), timeToLive.getUnit());
+    }
+
+    public void setMaxConnectionsPerRoute(final int maxConnectionsPerRoute) {
+        builder.setMaxConnPerRoute(maxConnectionsPerRoute);
+    }
+
+    public void setMaxConnectionsTotal(final int maxConnectionsTotal) {
+        builder.setMaxConnTotal(maxConnectionsTotal);
+    }
+
+    public void setTrustedKeystore(final RestSettings.Keystore keystore) throws Exception {
+        final SSLContextBuilder ssl = SSLContexts.custom();
 
         final String path = keystore.getPath();
         final String password = keystore.getPassword();
 
         final URL resource = HttpClientFactoryBean.class.getClassLoader().getResource(path);
+
         if (resource == null) {
             throw new FileNotFoundException(format("Keystore [%s] not found.", path));
         }
 
         try {
-            contextBuilder.loadTrustMaterial(resource, password == null ? null : password.toCharArray());
-            builder.setSSLSocketFactory(new SSLConnectionSocketFactory(contextBuilder.build(), getDefaultHostnameVerifier()));
+            ssl.loadTrustMaterial(resource, password == null ? null : password.toCharArray());
+            builder.setSSLSocketFactory(new SSLConnectionSocketFactory(ssl.build(), getDefaultHostnameVerifier()));
         } catch (final Exception e) {
-            LOG.error("Error loading keystore [{}]:", path, e);    // log full exception, bean initialization code swallows it
+            LOG.error("Error loading keystore [{}]:", path, e); // log full exception, bean initialization code swallows it
             throw e;
         }
     }
@@ -79,7 +92,6 @@ class HttpClientFactoryBean implements FactoryBean<HttpClient> {
     @Override
     public CloseableHttpClient getObject() {
         builder.setDefaultRequestConfig(config.build());
-        builder.setConnectionTimeToLive(30, TimeUnit.SECONDS);
         customizer.customize(builder);
         return builder.build();
     }
