@@ -10,7 +10,7 @@
 
     <groupId>org.zalando</groupId>
     <artifactId>put-it-to-rest</artifactId>
-    <version>0.10.0</version>
+    <version>0.11.0-SNAPSHOT</version>
 
     <name>Put it to REST!</name>
     <description>Spring Boot REST Client Auto Configuration</description>
