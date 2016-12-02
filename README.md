@@ -191,8 +191,8 @@ overridden by name, **not** by type. As an example, the following code would add
 ```java
 @Bean
 @Qualifier("example")
-public HttpMessageConverters exampleHttpMessageConverters() {
-    return new HttpMessageConverters(new Jaxb2RootElementHttpMessageConverter());
+public ClientHttpMessageConverters exampleHttpMessageConverters() {
+    return new ClientHttpMessageConverters(new Jaxb2RootElementHttpMessageConverter());
 }
 ```
 
@@ -201,7 +201,7 @@ The following table shows all beans with their respective name (for the `example
 | Bean Name                              | Bean Type                                                          | Configures by default      |
 |----------------------------------------|--------------------------------------------------------------------|----------------------------|
 | `accessToken` (no client prefix!)      | `AccessTokens`                                                     | OAuth settings             |
-| `exampleClientHttpMessageConverters`   | `ClientHttpMessageConverters`                                      | Text, JSON and JSON Stream |
+| `exampleHttpMessageConverters`         | `ClientHttpMessageConverters`                                      | Text, JSON and JSON Stream |
 | `exampleHttpClient`                    | `HttpClient`                                                       | Interceptors and timeouts  |
 | `exampleAsyncClientHttpRequestFactory` | `AsyncClientHttpRequestFactory` **and** `ClientHttpRequestFactory` |                            |
 | `exampleRest`                          | `Rest`                                                             | Base URL                   |
