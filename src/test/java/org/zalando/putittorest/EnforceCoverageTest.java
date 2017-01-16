@@ -18,7 +18,7 @@ public final class EnforceCoverageTest {
     private ConfigurableEnvironment environment;
 
     @InjectMocks
-    private RestClientPostProcessor unit;
+    private RestClientPostProcessor unit = new RestClientPostProcessor(name -> null);
 
     @Test(expected = IllegalStateException.class)
     public void shouldTriggerSneakyException() {

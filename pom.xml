@@ -53,11 +53,11 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <slf4j.version>1.7.21</slf4j.version>
-        <spring.version>4.3.3.RELEASE</spring.version>
-        <spring-boot.version>1.4.1.RELEASE</spring-boot.version>
-        <riptide.version>2.0.0-RC8</riptide.version>
-        <logbook.version>1.0.0</logbook.version>
-        <tracer.version>0.10.1</tracer.version>
+        <spring.version>4.3.4.RELEASE</spring.version>
+        <spring-boot.version>1.4.2.RELEASE</spring-boot.version>
+        <riptide.version>2.1.0</riptide.version>
+        <logbook.version>1.0.1</logbook.version>
+        <tracer.version>0.11.2</tracer.version>
         <zmon.version>0.9.7</zmon.version>
     </properties>
 
@@ -96,12 +96,12 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
+            <version>20.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.10</version>
+            <version>1.16.12</version>
             <scope>provided</scope>
         </dependency>
 
@@ -139,6 +139,18 @@
             <version>${riptide.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>riptide-exceptions</artifactId>
+            <version>${riptide.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>riptide-hystrix</artifactId>
+            <version>${riptide.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.zalando.stups</groupId>
             <artifactId>tokens</artifactId>
             <version>0.9.9-gh52-1</version>
@@ -147,7 +159,7 @@
         <dependency>
             <groupId>org.zalando.stups</groupId>
             <artifactId>stups-http-components-oauth2</artifactId>
-            <version>1.0.15-GH42-1</version>
+            <version>1.0.15-GH-44</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

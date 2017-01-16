@@ -54,8 +54,7 @@ public final class AccessTokensMissingTest {
         new SpringApplicationBuilder(TestConfiguration.class)
                 .profiles("default")
                 .build()
-                .run()
-                .stop();
+                .run();
     }
 
 }
