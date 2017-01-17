@@ -1,4 +1,7 @@
 rest:
+  defaults:
+    plugins:
+      - temporary-exception
   clients:
     example:
       base-url: https://example.com
@@ -8,9 +11,12 @@ rest:
         - example.read
     ecb:
       base-url: http://www.ecb.europa.eu
+      plugins:
+        - original-stack-trace
       compress-request: true
     github:
       base-url: https://github.com
+      plugins: []
       keystore:
         path: github.keystore
         password: password
@@ -18,3 +24,9 @@ rest:
       base-url: https://github.com
       keystore:
         path: github.keystore
+    foo:
+      plugins:
+        - hystrix
+    bar:
+      plugins:
+        - hystrix

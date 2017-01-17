@@ -10,11 +10,12 @@ final class RestFactory {
 
     @SuppressWarnings("unused")
     public static Rest create(final AsyncClientHttpRequestFactory requestFactory,
-            final List<HttpMessageConverter<?>> converters, final String baseUrl) {
+            final List<HttpMessageConverter<?>> converters, final String baseUrl, final Plugins plugins) {
         return Rest.builder()
                 .requestFactory(requestFactory)
                 .converters(converters)
                 .baseUrl(baseUrl)
+                .plugins(plugins.getPlugins())
                 .build();
     }
 

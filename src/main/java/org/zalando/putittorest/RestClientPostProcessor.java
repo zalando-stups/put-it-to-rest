@@ -49,9 +49,14 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
     private static final Logger LOG = LoggerFactory.getLogger(RestClientPostProcessor.class);
 
+    private final PluginResolver resolver;
     private ConfigurableEnvironment environment;
     private Registry registry;
     private RestSettings settings;
+
+    public RestClientPostProcessor(final PluginResolver resolver) {
+        this.resolver = resolver;
+    }
 
     @Override
     public void setEnvironment(final Environment environment) {
@@ -70,7 +75,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
             final String convertersId = registerHttpMessageConverters(id);
             final String baseUrl = client.getBaseUrl();
 
-            registerRest(id, factoryId, convertersId, baseUrl);
+            registerRest(id, client, factoryId, convertersId, baseUrl);
             registerRestTemplate(id, factoryId, convertersId, baseUrl);
             registerAsyncRestTemplate(id, factoryId, convertersId, baseUrl);
         });
@@ -133,8 +138,8 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         });
     }
 
-    private String registerRest(final String id, final String factoryId, final String convertersId,
-            @Nullable final String baseUrl) {
+    private String registerRest(final String id, final Client client, final String factoryId,
+            final String convertersId, @Nullable final String baseUrl) {
         return registry.register(id, Rest.class, () -> {
             LOG.debug("Client [{}]: Registering Rest", id);
 
@@ -149,7 +154,32 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
             rest.addConstructorArgValue(converters);
 
             rest.addConstructorArgValue(baseUrl);
+
+            rest.addConstructorArgReference(registerPlugins(id, client.getPlugins()));
+
             return rest;
+        });
+    }
+
+    private String registerPlugins(final String id, final List<String> clientPlugins) {
+        return registry.register(id, Plugins.class, () -> {
+            final List<String> defaultPlugins = settings.getDefaults().getPlugins().isEmpty() ?
+                    Defaults.PLUGINS : settings.getDefaults().getPlugins();
+
+            final List<String> names = clientPlugins.isEmpty() ?
+                    defaultPlugins : clientPlugins;
+
+            final BeanDefinitionBuilder plugins = genericBeanDefinition(Plugins.class);
+
+            final List<Object> list = list();
+
+            names.stream()
+                    .map(resolver::resolve)
+                    .forEach(list::add);
+
+            plugins.addConstructorArgValue(list);
+
+            return plugins;
         });
     }
 
