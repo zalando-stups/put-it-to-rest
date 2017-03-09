@@ -51,8 +51,8 @@ public final class RestSettings {
         private TimeSpan connectionTimeout;
         private TimeSpan socketTimeout;
         private TimeSpan connectionTimeToLive;
-        private int maxConnectionsPerRoute;
-        private int maxConnectionsTotal;
+        private Integer maxConnectionsPerRoute;
+        private Integer maxConnectionsTotal;
         private OAuth oauth;
         private final List<String> plugins = new ArrayList<>();
         private boolean compressRequest = false;
