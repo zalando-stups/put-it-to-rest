@@ -2,11 +2,14 @@ package org.zalando.putittorest.zmon;
 
 import org.apache.http.HttpException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.protocol.HttpContext;
 import org.junit.Test;
 
 import java.io.IOException;
 
+import static java.net.URI.create;
+import static org.apache.http.client.methods.HttpRequestWrapper.wrap;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.Is.is;
@@ -38,6 +41,19 @@ public class ZmonRequestInterceptorTest {
         final HttpContext context = mock(HttpContext.class);
 
         unit.process(new HttpGet("http://www.example.com:80/path"), context);
+
+        verify(context).setAttribute(eq(Timing.ATTRIBUTE), argThat(hasFeature(Timing::getHost, is("www.example.com:80"))));
+    }
+
+    @Test
+    public void shouldStoreHostOnWrappedRequest() throws IOException, HttpException {
+        final HttpContext context = mock(HttpContext.class);
+
+        final HttpRequestWrapper innerRequest = wrap(new HttpGet("http://www.example.com:80/path"));
+        final HttpRequestWrapper outerRequest = wrap(innerRequest);
+        innerRequest.setURI(create("/path"));
+        outerRequest.setURI(create("/path"));
+        unit.process(outerRequest, context);
 
         verify(context).setAttribute(eq(Timing.ATTRIBUTE), argThat(hasFeature(Timing::getHost, is("www.example.com:80"))));
     }
