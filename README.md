@@ -171,6 +171,7 @@ Besides `Rest`, you can also alternatively inject any of the following types per
 - `AsyncClientHttpRequestFactory`
 - `HttpClient`
 - `ClientHttpMessageConverters`
+- `AsyncListenableTaskExecutor`
 
 A global `AccessTokens` bean is also provided.
 
@@ -220,6 +221,7 @@ The following table shows all beans with their respective name (for the `example
 | `exampleRest`                          | `Rest`                                                             | Base URL                   |
 | `exampleRestTemplate`                  | `RestTemplate`                                                     | Base URL                   |
 | `exampleAsyncRestTemplate`             | `AsyncRestTemplate`                                                | Base URL                   |
+| `exampleAsyncListenableTaskExecutor`   | `AsyncListenableTaskExecutor`                                      | ConcurrentTaskExecutor     |
 
 If you override a bean then all of its dependencies (see the [graph](#customization)), will **not** be registered,
 unless required by some other bean.
