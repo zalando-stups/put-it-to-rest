@@ -17,6 +17,7 @@ import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.http.client.AsyncClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -229,6 +230,22 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
         });
     }
 
+    private String registerAsyncListenableTaskExecutor(final String id) {
+        return registry.register(id, AsyncListenableTaskExecutor.class, () -> {
+            LOG.debug("Client [{}]: Registering AsyncListenableTaskExecutor", id);
+
+            return genericBeanDefinition(ConcurrentTaskExecutor.class)
+                    .addConstructorArgValue(BeanDefinitionBuilder.genericBeanDefinition(TracingExecutors.class)
+                            .setFactoryMethod("preserve")
+                            .addConstructorArgValue(genericBeanDefinition(Executors.class)
+                                    .setFactoryMethod("newCachedThreadPool")
+                                    .setDestroyMethodName("shutdown")
+                                    .getBeanDefinition())
+                            .addConstructorArgReference("tracer")
+                            .getBeanDefinition());
+        });
+    }
+
     private String registerAsyncClientHttpRequestFactory(final String id, final Defaults defaults,
             final Client client) {
         return registry.register(id, AsyncClientHttpRequestFactory.class, () -> {
@@ -238,16 +255,7 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
                     genericBeanDefinition(RestAsyncClientHttpRequestFactory.class);
 
             factory.addConstructorArgReference(registerHttpClient(id, defaults, client));
-            factory.addConstructorArgValue(genericBeanDefinition(ConcurrentTaskExecutor.class)
-                    .addConstructorArgValue(BeanDefinitionBuilder.genericBeanDefinition(TracingExecutors.class)
-                            .setFactoryMethod("preserve")
-                            .addConstructorArgValue(genericBeanDefinition(Executors.class)
-                                    .setFactoryMethod("newCachedThreadPool")
-                                    .setDestroyMethodName("shutdown")
-                                    .getBeanDefinition())
-                            .addConstructorArgReference("tracer")
-                            .getBeanDefinition())
-                    .getBeanDefinition());
+            factory.addConstructorArgReference(registerAsyncListenableTaskExecutor(id));
 
             return factory;
         });
