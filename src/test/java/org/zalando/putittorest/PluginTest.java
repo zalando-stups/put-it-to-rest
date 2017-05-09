@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
@@ -48,26 +49,30 @@ public final class PluginTest {
 
     @Test
     public void shouldUseDefault() throws Exception {
-        assertThat(getPlugins(example), contains(instanceOf(TemporaryExceptionPlugin.class)));
+        assertThat(getPlugins(example), contains(equalTo(TemporaryExceptionPlugin.class)));
     }
 
     @Test
     public void shouldUseTemporaryException() throws Exception {
-        assertThat(getPlugins(ecb), contains(instanceOf(OriginalStackTracePlugin.class)));
+        assertThat(getPlugins(ecb), contains(equalTo(OriginalStackTracePlugin.class)));
     }
 
     @Test
     public void emptyListOfPluginsShouldUseDefaults() throws Exception {
-        assertThat(getPlugins(github), contains(instanceOf(TemporaryExceptionPlugin.class)));
+        assertThat(getPlugins(github), contains(equalTo(TemporaryExceptionPlugin.class)));
     }
 
-    private List<Plugin> getPlugins(final Rest rest) throws Exception {
-        final List<Plugin> plugins = new ArrayList<>();
+    private List<Class<? extends Plugin>> getPlugins(final Rest rest) throws Exception {
+        final List<Class<? extends Plugin>> plugins = new ArrayList<>();
 
         final Field field = Rest.class.getDeclaredField("plugin");
         field.setAccessible(true);
 
-        plugins.add((Plugin) field.get(rest));
+        final Plugin plugin = (Plugin) field.get(rest);
+
+        plugins.add(plugin instanceof DeferredPlugin ?
+                DeferredPlugin.class.cast(plugin).getType() :
+                plugin.getClass());
 
         return plugins;
     }

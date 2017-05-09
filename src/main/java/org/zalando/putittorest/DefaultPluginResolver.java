@@ -12,36 +12,32 @@ import java.util.function.Supplier;
 
 public final class DefaultPluginResolver implements PluginResolver {
 
-    private final ImmutableMap<String, Supplier<Plugin>> plugins;
+    private final ImmutableMap<String, Plugin> plugins;
 
     public DefaultPluginResolver(final ListableBeanFactory factory) {
         this.plugins = ImmutableMap.of(
-                "original-stack-trace", OriginalStackTracePlugin::new,
-                "temporary-exception", () ->
-                        load(factory, TemporaryExceptionPlugin.class, TemporaryExceptionPlugin::new),
-                "hystrix", () ->
-                        load(factory, HystrixPlugin.class, HystrixPlugin::new)
+                "original-stack-trace", new OriginalStackTracePlugin(),
+                "temporary-exception", load(factory, TemporaryExceptionPlugin.class, TemporaryExceptionPlugin::new),
+                "hystrix", load(factory, HystrixPlugin.class, HystrixPlugin::new)
         );
     }
 
-    private static <P extends Plugin> P load(final ListableBeanFactory factory, final Class<P> type,
+    private static <P extends Plugin> Plugin load(final ListableBeanFactory factory, final Class<P> type,
             final Supplier<P> creator) {
 
-        if (factory.getBeanNamesForType(type).length > 0) {
-            return factory.getBean(type);
-        }
-        return creator.get();
+        final Supplier<P> loader = () -> factory.getBeanNamesForType(type).length > 0 ? factory.getBean(type) : null;
+        return new DeferredPlugin<>(type, loader, creator);
     }
 
     @Override
     public Plugin resolve(final String name) {
-        @Nullable final Supplier<Plugin> provider = plugins.get(name);
+        @Nullable final Plugin plugin = plugins.get(name);
 
-        if (provider == null) {
+        if (plugin == null) {
             throw new IllegalArgumentException("Unknown plugin name: " + name);
         }
 
-        return provider.get();
+        return plugin;
     }
 
 }
