@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.zalando.logbook.spring.LogbookAutoConfiguration;
+import org.zalando.logbook.spring.LogbookHttpClientAutoConfiguration;
 import org.zalando.stups.tokens.AccessTokens;
 import org.zalando.tracer.spring.TracerAutoConfiguration;
 
@@ -29,6 +30,7 @@ public final class AccessTokensImplicitDisableTest {
             RestClientAutoConfiguration.class,
             JacksonAutoConfiguration.class,
             LogbookAutoConfiguration.class,
+            LogbookHttpClientAutoConfiguration.class,
             TracerAutoConfiguration.class
     })
     public static class TestConfiguration {

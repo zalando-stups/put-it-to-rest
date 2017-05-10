@@ -17,16 +17,18 @@ public final class DefaultPluginResolver implements PluginResolver {
     public DefaultPluginResolver(final ListableBeanFactory factory) {
         this.plugins = ImmutableMap.of(
                 "original-stack-trace", new OriginalStackTracePlugin(),
-                "temporary-exception", load(factory, TemporaryExceptionPlugin.class, TemporaryExceptionPlugin::new),
-                "hystrix", load(factory, HystrixPlugin.class, HystrixPlugin::new)
+                "temporary-exception", defer(factory, TemporaryExceptionPlugin.class, TemporaryExceptionPlugin::new),
+                "hystrix", defer(factory, HystrixPlugin.class, HystrixPlugin::new)
         );
     }
 
-    private static <P extends Plugin> Plugin load(final ListableBeanFactory factory, final Class<P> type,
+    private static <P extends Plugin> Plugin defer(final ListableBeanFactory factory, final Class<P> type,
             final Supplier<P> creator) {
 
-        final Supplier<P> loader = () -> factory.getBeanNamesForType(type).length > 0 ? factory.getBean(type) : null;
-        return new DeferredPlugin<>(type, loader, creator);
+        return new DeferredPlugin<>(type, () ->
+                factory.getBeanNamesForType(type).length > 0 ?
+                        factory.getBean(type) :
+                        creator.get());
     }
 
     @Override

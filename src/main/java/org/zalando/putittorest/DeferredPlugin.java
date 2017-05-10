@@ -6,7 +6,6 @@ import org.zalando.riptide.RequestArguments;
 import org.zalando.riptide.RequestExecution;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
@@ -17,13 +16,11 @@ final class DeferredPlugin<P extends Plugin> implements Plugin {
     private final ConcurrentMap<Plugin, P> delegate = new ConcurrentHashMap<>();
 
     private final Class<P> type;
-    private final Supplier<P> loader;
-    private final Supplier<P> creator;
+    private final Supplier<P> supplier;
 
-    DeferredPlugin(final Class<P> type, final Supplier<P> loader, final Supplier<P> creator) {
+    DeferredPlugin(final Class<P> type, final Supplier<P> supplier) {
         this.type = type;
-        this.loader = loader;
-        this.creator = creator;
+        this.supplier = supplier;
     }
 
     @Override
@@ -33,20 +30,12 @@ final class DeferredPlugin<P extends Plugin> implements Plugin {
     }
 
     private P getDelegate() {
-        return delegate.computeIfAbsent(this, $ -> {
-            @Nullable final P loaded = loader.get();
-            return loaded == null ? creator.get() : loaded;
-        });
+        return delegate.computeIfAbsent(this, $ -> supplier.get());
     }
 
     @VisibleForTesting
     Class<P> getType() {
         return type;
-    }
-
-    @Override
-    public String toString() {
-        return type.getName() + "@" + Integer.toHexString(hashCode());
     }
 
 }
