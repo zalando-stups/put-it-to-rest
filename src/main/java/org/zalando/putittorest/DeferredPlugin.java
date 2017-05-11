@@ -10,15 +10,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
-final class DeferredPlugin<P extends Plugin> implements Plugin {
+final class DeferredPlugin implements Plugin {
 
     // turns out this is actually easier to use than AtomicReference since we want to use a lazy set-once
-    private final ConcurrentMap<Plugin, P> delegate = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Plugin, Plugin> delegate = new ConcurrentHashMap<>();
 
-    private final Class<P> type;
-    private final Supplier<P> supplier;
+    private final Class<? extends Plugin> type;
+    private final Supplier<? extends Plugin> supplier;
 
-    DeferredPlugin(final Class<P> type, final Supplier<P> supplier) {
+    DeferredPlugin(final Class<? extends Plugin> type, final Supplier<? extends Plugin> supplier) {
         this.type = type;
         this.supplier = supplier;
     }
@@ -29,12 +29,12 @@ final class DeferredPlugin<P extends Plugin> implements Plugin {
         return getDelegate().prepare(arguments, execution);
     }
 
-    private P getDelegate() {
+    private Plugin getDelegate() {
         return delegate.computeIfAbsent(this, $ -> supplier.get());
     }
 
     @VisibleForTesting
-    Class<P> getType() {
+    Class<? extends Plugin> getType() {
         return type;
     }
 
