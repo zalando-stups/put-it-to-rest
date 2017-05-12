@@ -41,7 +41,7 @@ class AccessTokensFactoryBean implements FactoryBean<AccessTokens> {
             }
 
             builder.manageToken(id)
-                    .addScopes(clientOAuth.getScopes())
+                    .addScopesTypeSafe(clientOAuth.getScopes())
                     .done();
         });
     }

@@ -1,6 +1,7 @@
 package org.zalando.putittorest;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.Configurable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 import static org.zalando.putittorest.Mocks.isMock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -28,7 +30,7 @@ public final class HttpAsyncClientOverrideTest {
         @Bean
         @Qualifier("example")
         public HttpClient exampleHttpClient() {
-            return mock(HttpClient.class);
+            return mock(HttpClient.class, withSettings().extraInterfaces(Configurable.class));
         }
 
     }

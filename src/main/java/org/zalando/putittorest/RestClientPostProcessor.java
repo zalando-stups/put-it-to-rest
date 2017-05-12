@@ -152,10 +152,9 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
                     .setFactoryMethod("getConverters")
                     .getBeanDefinition();
             converters.setFactoryBeanName(convertersId);
+
             rest.addConstructorArgValue(converters);
-
             rest.addConstructorArgValue(baseUrl);
-
             rest.addConstructorArgReference(registerPlugins(id, client.getPlugins()));
 
             return rest;

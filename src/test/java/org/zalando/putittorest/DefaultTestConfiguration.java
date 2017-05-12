@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.zalando.logbook.spring.LogbookAutoConfiguration;
+import org.zalando.logbook.spring.LogbookHttpClientAutoConfiguration;
+import org.zalando.logbook.spring.LogbookSecurityAutoConfiguration;
 import org.zalando.riptide.exceptions.ExceptionClassifier;
 import org.zalando.riptide.exceptions.TemporaryExceptionPlugin;
 import org.zalando.stups.tokens.AccessTokens;
@@ -21,6 +23,8 @@ import static org.zalando.riptide.exceptions.ExceptionClassifier.create;
         RestClientAutoConfiguration.class,
         JacksonAutoConfiguration.class,
         LogbookAutoConfiguration.class,
+        LogbookHttpClientAutoConfiguration.class,
+        LogbookSecurityAutoConfiguration.class,
         TracerAutoConfiguration.class,
         ZmonMetricsAutoConfiguration.class
 })
