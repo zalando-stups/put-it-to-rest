@@ -7,6 +7,7 @@ import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -29,6 +30,7 @@ import org.zalando.putittorest.RestSettings.Client;
 import org.zalando.putittorest.RestSettings.Defaults;
 import org.zalando.putittorest.zmon.ZmonRequestInterceptor;
 import org.zalando.putittorest.zmon.ZmonResponseInterceptor;
+import org.zalando.riptide.Plugin;
 import org.zalando.riptide.Rest;
 import org.zalando.riptide.httpclient.RestAsyncClientHttpRequestFactory;
 import org.zalando.riptide.stream.Streams;
@@ -39,8 +41,10 @@ import org.zalando.tracer.concurrent.TracingExecutors;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition;
 import static org.zalando.putittorest.Registry.generateBeanName;
 import static org.zalando.putittorest.Registry.list;
@@ -50,12 +54,12 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
     private static final Logger LOG = LoggerFactory.getLogger(RestClientPostProcessor.class);
 
-    private final PluginResolver resolver;
+    private final ObjectFactory<PluginResolver> resolver;
     private ConfigurableEnvironment environment;
     private Registry registry;
     private RestSettings settings;
 
-    public RestClientPostProcessor(final PluginResolver resolver) {
+    public RestClientPostProcessor(final ObjectFactory<PluginResolver> resolver) {
         this.resolver = resolver;
     }
 
@@ -171,13 +175,9 @@ public class RestClientPostProcessor implements BeanDefinitionRegistryPostProces
 
             final BeanDefinitionBuilder plugins = genericBeanDefinition(Plugins.class);
 
-            final List<Object> list = list();
-
-            names.stream()
-                    .map(resolver::resolve)
-                    .forEach(list::add);
-
-            plugins.addConstructorArgValue(list);
+            plugins.addConstructorArgValue((Supplier<List<Plugin>>) () -> names.stream()
+                    .map(name -> resolver.getObject().resolve(name))
+                    .collect(toList()));
 
             return plugins;
         });

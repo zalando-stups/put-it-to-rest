@@ -1,6 +1,7 @@
 package org.zalando.putittorest;
 
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,7 +28,7 @@ import org.zalando.tracer.spring.TracerAutoConfiguration;
 public class RestClientAutoConfiguration {
 
     @Bean
-    public RestClientPostProcessor restClientPostProcessor(final PluginResolver resolver) {
+    public static RestClientPostProcessor restClientPostProcessor(final ObjectFactory<PluginResolver> resolver) {
         return new RestClientPostProcessor(resolver);
     }
 

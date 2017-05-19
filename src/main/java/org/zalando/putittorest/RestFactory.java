@@ -15,7 +15,7 @@ final class RestFactory {
                 .requestFactory(requestFactory)
                 .converters(converters)
                 .baseUrl(baseUrl)
-                .plugins(plugins.getPlugins())
+                .plugins(plugins.resolvePlugins())
                 .build();
     }
 
