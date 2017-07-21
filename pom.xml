@@ -53,10 +53,10 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <slf4j.version>1.7.21</slf4j.version>
-        <spring.version>4.3.8.RELEASE</spring.version>
-        <spring-boot.version>1.5.3.RELEASE</spring-boot.version>
-        <riptide.version>2.3.0</riptide.version>
-        <logbook.version>1.2.1</logbook.version>
+        <spring.version>4.3.10.RELEASE</spring.version>
+        <spring-boot.version>1.5.4.RELEASE</spring-boot.version>
+        <riptide.version>2.4.0</riptide.version>
+        <logbook.version>1.4.0</logbook.version>
         <tracer.version>0.11.2</tracer.version>
         <zmon.version>0.9.7</zmon.version>
     </properties>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>21.0</version>
+            <version>22.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -159,7 +159,7 @@
         <dependency>
             <groupId>org.zalando.stups</groupId>
             <artifactId>stups-http-components-oauth2</artifactId>
-            <version>1.0.18</version>
+            <version>1.0.19</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
