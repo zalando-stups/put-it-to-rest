@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.zalando.logbook.spring.LogbookAutoConfiguration;
-import org.zalando.logbook.spring.LogbookHttpClientAutoConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -19,7 +18,6 @@ public final class LogbookCompatibilityTest {
     @Import(DefaultTestConfiguration.class)
     @ImportAutoConfiguration({
             LogbookAutoConfiguration.class,
-            LogbookHttpClientAutoConfiguration.class,
             JacksonAutoConfiguration.class
     })
     public static class TestConfiguration {
