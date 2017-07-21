@@ -1,6 +1,5 @@
 package org.zalando.putittorest;
 
-import com.google.common.base.MoreObjects;
 import org.springframework.beans.factory.FactoryBean;
 import org.zalando.putittorest.RestSettings.Defaults;
 import org.zalando.putittorest.RestSettings.GlobalOAuth;
