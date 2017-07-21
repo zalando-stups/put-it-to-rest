@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ public final class RestSettings {
     @Setter
     public static final class GlobalOAuth {
         private URI accessTokenUrl;
+        private Path credentialsDirectory;
         private TimeSpan schedulingPeriod = TimeSpan.of(5, SECONDS);
         private TimeSpan connectionTimeout = TimeSpan.of(1, SECONDS);
         private TimeSpan socketTimeout = TimeSpan.of(2, SECONDS);

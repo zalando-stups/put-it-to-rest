@@ -100,6 +100,7 @@ rest:
       - original-stack-trace
   oauth:
     access-token-url: https://auth.example.com
+    credentials-directory: /secrets
     scheduling-period: 10 seconds
     connection-timeout: 1 second
     socket-timeout: 1500 milliseconds
@@ -135,7 +136,8 @@ For a complete overview of available properties, they type and default value ple
 | `rest.defaults.max-connections-per-route`     | `int`          | no       | `2`                                           |
 | `rest.defaults.max-connections-total`         | `int`          | no       | maximum of `20` and *per route*               |
 | `rest.defaults.plugins`                       | `List<String>` | no       | `[original-stack-trace]`                      |
-| `rest.oauth.access-token-url`                 | `URI`          | no       | env var `ACCESS_TOKEN_URL`                    |   
+| `rest.oauth.access-token-url`                 | `URI`          | no       | env var `ACCESS_TOKEN_URL`                    |
+| `rest.oauth.credentials-directory`            | `Path`         | no       | env var `CREDENTIALS_DIR`                     |
 | `rest.oauth.scheduling-period`                | `TimeSpan`     | no       | `5 seconds`                                   |
 | `rest.oauth.connetion-timeout`                | `TimeSpan`     | no       | `1 second`                                    |
 | `rest.oauth.socket-timeout`                   | `TimeSpan`     | no       | `2 seconds`                                   |
