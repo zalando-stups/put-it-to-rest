@@ -1,3 +1,22 @@
+# Deprecated
+
+Please head over to [zalando/riptide](https://github.com/zalando/riptide) and use
+the `riptide-spring-boot-starter` instead.
+
+## Migration
+
+Please follow these steps to migrate from *Put it to REST!* to the *Riptide Spring Boot Starter*:
+
+- Change `rest` key to `riptide`
+- Change `connection-timeout` to `connect-timeout`
+- Remove `plugins` and replace
+  - `original-stack-trace` with `preserve-stack-trace`
+  - `temporary-exception` with `detect-transient-faults`
+- No hystrix support, use failsafe, if applicable
+- Different defaults
+  - Maximum connections per route was increased from 2 to **20**
+  - Thread pool has a bounded queue by default and a size of 0
+
 # Put it to REST!
 
 [![Relaxing frog](docs/frog.jpg)](https://pixabay.com/en/frog-meadow-relaxed-relaxation-fig-1109795/)
